@@ -36,6 +36,26 @@ export function narrowboat(g: Kit, x: number, y: number, len: number, name: stri
 
 const BOAT = 'HYPOTENUSE';
 
+/** Birds that flap across the sky and wrap around: [x, y, speed, phase]. */
+function flock(g: Kit, list: [number, number, number, number][], c: string) {
+  g.anim(t => list.forEach(([x0, y0, sp, ph]) => {
+    const x = Math.round((((x0 + t * sp) % 700) + 700) % 700 - 30), y = Math.round(y0 + Math.sin(t * .7 + ph) * 4), f = Math.floor(t * 4 + ph * 3) % 4, w = f === 0 ? -1 : f === 2 ? 1 : 0, P = g.px;
+    P(x - 1, y, c); P(x, y, c); P(x + 1, y, c); P(x - 2, y + w, c); P(x + 2, y + w, c); P(x - 3, y + w * 2, c); P(x + 3, y + w * 2, c);
+  }));
+}
+
+/** Our narrowboat, bobbing gently with smoke from the chimney. `extra` rides along with the boat; `clip` hides what's behind the lock walls. */
+function floatBoat(g: Kit, x: number, y: number, len: number, dusk: boolean, bowLeft: boolean, painted: boolean, ph: number, extra?: (t: number) => void, clip?: [number, number, number, number]) {
+  const chim = bowLeft ? x + len - 52 : x + 42;
+  g.anim(t => {
+    const b = Math.sin(t * .8 + ph) > .2 ? -1 : 0;
+    if (clip) { g.ctx.save(); g.ctx.beginPath(); g.ctx.rect(...clip); g.ctx.clip(); }
+    g.shift(b, () => { narrowboat(g, x, y, len, BOAT, dusk, bowLeft, painted); extra?.(t); });
+    if (clip) g.ctx.restore();
+    for (let k = 0; k < 4; k++) { const p = (t * .3 + k / 4 + ph) % 1, sx = chim + 2 + Math.round(p * 10 + Math.sin(t * 1.2 + k) * 1.5), sy = y + b - 24 - p * 30, z = p < .3 ? 2 : p < .7 ? 3 : 2; if (p < .9) g.R(sx, sy, z, z, p < .5 ? 'n200' : 'n300'); }
+  });
+}
+
 export const scenes: Record<string, (g: Kit, v: Vis) => void> = {
   littlevenice(g, v) {
     const { R, px, D, E, C, L, T, rnd, bands } = g;
@@ -60,8 +80,17 @@ export const scenes: Record<string, (g: Kit, v: Vis) => void> = {
     E(304, 172, 74, 10, 'grn8'); E(304, 170, 70, 7, 'grn'); R(234, 176, 140, 3, 'stock7');
     for (let y = 182; y < 210; y += 2) if (rnd() > .3) R(260 + rnd() * 20, y, 70 + rnd() * 20, 1, 'grn8');
     R(298, 104, 8, 68, 'wood9'); L(300, 120, 280, 98, 'wood9'); L(304, 116, 330, 96, 'wood9');
-    E(304, 104, 58, 38, 'grn8'); E(298, 96, 48, 30, 'grn'); E(316, 92, 26, 18, 'lime');
-    for (let i = 0; i < 120; i++) { const x = 248 + rnd() * 112, dx = x - 304, y0 = 104 + 38 * Math.sqrt(Math.max(0, 1 - (dx * dx) / 3364)) - 8 - rnd() * 14, len = 18 + rnd() * 40; for (let y = y0; y < Math.min(170, y0 + len); y += 1) if (rnd() > .25) px(x + Math.sin(y * .1) * 1.5, y, rnd() > .5 ? 'grn' : 'grn8'); }
+    g.shimmer(156, 250, 'wat', ['wat3', 'bg']);
+    // The willow sways, with the odd gust
+    g.anim(t => {
+      const gust = Math.pow(Math.max(0, Math.sin(t * 0.42)), 6), amp = 0.9 + 3.4 * gust, cx = Math.round(Math.sin(t * 1.3) * gust * 1.6);
+      let sd = 7; const r = () => { sd = (sd * 16807) % 2147483647; return (sd - 1) / 2147483646; };
+      E(304 + cx, 104, 58, 38, 'grn8'); E(298 + cx, 96, 48, 30, 'grn'); E(316 + cx, 92, 26, 18, 'lime');
+      for (let i = 0; i < 120; i++) {
+        const x = 248 + r() * 112, dx = x - 304, y0 = 104 + 38 * Math.sqrt(Math.max(0, 1 - (dx * dx) / 3364)) - 8 - r() * 14, len = 18 + r() * 40, w = Math.sin(t * 1.7 + i * 0.37) * amp + gust * 2;
+        for (let y = y0; y < Math.min(170, y0 + len); y += 1) { const f = (y - y0) / len; if (r() > .25) px(x + cx * (1 - f) + Math.sin(y * .1) * 1.5 + w * f * f, y, r() > .5 ? 'grn' : 'grn8'); }
+      }
+    });
     R(372, 150, 14, 34, 'stock7'); R(468, 150, 14, 34, 'stock7');
     for (let x = 372; x < 482; x++) { const t = (x - 427) / 55, u = Math.round(178 - 26 * (1 - t * t)); R(x, 138, 1, 6, 'blu'); R(x, 144, 1, Math.max(0, u - 144), 'blu8'); px(x, u, 'bg'); R(x, u + 1, 1, 2, 'blu'); }
     for (let x = 376; x < 476; x += 8) { L(x, 144, x + 4, 152, 'blu'); L(x + 4, 152, x + 8, 144, 'blu'); }
@@ -72,10 +101,7 @@ export const scenes: Record<string, (g: Kit, v: Vis) => void> = {
     for (let x = 24; x < 164; x++) { const c = ((x - 24) >> 3) % 2 ? 'bg' : 'a600'; R(x, 128, 1, 7, c); if ((x - 24) % 8 === 4) R(x, 135, 1, 2, c); }
     R(128, 144, 26, 9, 'bg'); T('CAFE', 130, 146, 'a700');
     ([[50, 'pink'], [90, 'grn'], [120, 'org']] as [number, string][]).forEach(([x, c]) => { R(x, 124, 6, 4, 'org'); C(x + 3, 122, 3, c); });
-    if (v.boat) {
-      narrowboat(g, 150, 196, 250, BOAT, false, false, v.painted);
-      ([[200, 'pink'], [226, 'yel'], [252, 'grn']] as [number, string][]).forEach(([x, c]) => { R(x, 188, 10, 4, 'org'); C(x + 5, 186, 3, c); px(x + 5, 186, 'bg'); });
-    }
+    if (v.boat) floatBoat(g, 150, 196, 250, false, false, v.painted, .9, () => ([[200, 'pink'], [226, 'yel'], [252, 'grn']] as [number, string][]).forEach(([x, c]) => { R(x, 188, 10, 4, 'org'); C(x + 5, 186, 3, c); px(x + 5, 186, 'bg'); }));
     R(0, 252, 640, 36, 'n300'); R(0, 252, 640, 2, 'n500'); R(0, 254, 640, 1, 'ink');
     for (let y = 256, k = 0; y < 288; y += 6, k++) for (let x = (k % 2) * 6 - 6; x < 640; x += 12) { R(x + 1, y + 1, 10, 4, 'n200'); R(x + 1, y + 4, 10, 1, 'n400'); }
     R(20, 160, 4, 116, 'ink'); R(16, 272, 12, 6, 'ink'); R(14, 150, 16, 4, 'ink'); R(16, 154, 12, 12, 'ink'); R(18, 156, 8, 8, 'yel'); R(20, 144, 4, 6, 'ink');
@@ -89,11 +115,18 @@ export const scenes: Record<string, (g: Kit, v: Vis) => void> = {
     R(526, 210, 96, 38, 'blu8'); R(528, 212, 92, 34, 'bg'); T('REGENTS CANAL', 532, 215, 'blu8'); T('CAMDEN  2.5KM', 532, 223, 'ink'); T('ANGEL   5KM', 532, 230, 'ink'); T('LIMEHOUSE 13', 532, 238, 'a700');
     // Barnaby's bench (back rail; the seat is drawn in front of him)
     R(446, 246, 64, 3, 'wood7'); R(446, 251, 64, 3, 'wood7'); R(448, 244, 3, 22, 'wood9'); R(505, 244, 3, 22, 'wood9');
-    ([[420, 100], [432, 94], [210, 52]] as [number, number][]).forEach(([x, y]) => { px(x - 2, y - 1, 'ink'); px(x - 1, y, 'ink'); px(x, y, 'ink'); px(x + 1, y, 'ink'); px(x + 2, y - 1, 'ink'); });
+    flock(g, [[420, 100, 9, 0], [432, 94, 9, 1.3], [210, 52, 6, 2.1]], 'ink');
+    // A pair of ducks paddling about, dabbling now and then
+    g.anim(t => ([[520, 182, 0, 'n400', 'grn8'], [546, 190, 2.4, 'wood7', 'wood7']] as [number, number, number, string, string][]).forEach(([x0, y, ph, bc, hc]) => {
+      const x = Math.round(x0 + Math.sin(t * .18 + ph) * 18), d = Math.cos(t * .18 + ph) > 0 ? 1 : -1, dab = (t + ph * 3) % 9 < .7;
+      R(x - d * 9 - (d < 0 ? 2 : 0), y + 2, 3, 1, 'wat3'); R(x - d * 13 - (d < 0 ? 1 : 0), y + 3, 2, 1, 'wat3'); E(x, y, 4, 2, bc);
+      if (dab) R(x - d * 3, y - 4, 2, 3, bc);
+      else { px(x - d * 5, y - 1, bc); R(x + d * 2 - (d < 0 ? 1 : 0), y - 5, 2, 3, hc); px(x + d * 4, y - 4, 'yel'); }
+    }));
   },
 
   camden(g, v) {
-    const { R, D, E, L, T, rnd, bands, brick } = g;
+    const { R, px, D, E, L, T, rnd, bands, brick } = g;
     bands(0, ['n300', 'n200', 'n100'], 44);
     const cloud = (x: number, y: number, s: number) => { E(x, y, 34 * s, 7 * s, 'n100'); E(x + 18 * s, y - 6 * s, 18 * s, 7 * s, 'n100'); D(x - 28 * s, y + 4 * s, 56 * s, 3, 'n100', 'n200'); };
     cloud(110, 26, 1); cloud(340, 50, .8); cloud(560, 18, 1);
@@ -116,7 +149,8 @@ export const scenes: Record<string, (g: Kit, v: Vis) => void> = {
     R(0, 192, 640, 6, 'n300'); for (let x = 0; x < 640; x += 22) R(x, 192, 1, 6, 'n500'); R(0, 198, 640, 30, 'n500');
     for (let i = 0; i < 60; i++) R(rnd() * 640, 200 + rnd() * 26, 4 + rnd() * 10, 1, rnd() > .5 ? 'n400' : 'n600');
     R(180, 168, 9, 70, 'n800'); R(180, 168, 9, 2, 'ink'); R(456, 168, 9, 70, 'n800'); R(456, 168, 9, 2, 'ink');
-    if (v.boat) { const by = v.lockDown ? 184 : 172; narrowboat(g, 214, by, 230, BOAT, false, false, v.painted); D(214, by + 56, 248, 6, 'n500', 'n600'); }
+    g.shimmer(200, 228, 'n500', ['n300', 'n400']);
+    if (v.boat) { const by = v.lockDown ? 184 : 172; D(214, by + 56, 248, 6, 'n500', 'n600'); floatBoat(g, 214, by, 230, false, false, v.painted, 0, undefined, [0, 0, 640, 234]); }
     R(0, 234, 640, 6, 'n300'); for (let x = 0; x < 640; x += 26) R(x, 234, 1, 6, 'n500'); R(0, 240, 640, 2, 'ink');
     R(0, 242, 640, 46, 'n500');
     for (let y = 242, k = 0; y < 288; y += 6, k++) for (let x = (k % 2) * 5 - 5; x < 640; x += 10) { R(x + 1, y + 1, 8, 4, 'n400'); R(x + 2, y + 1, 5, 1, 'n300'); }
@@ -137,6 +171,13 @@ export const scenes: Record<string, (g: Kit, v: Vis) => void> = {
     if (!v.packLent) { R(628, 262, 8, 20, 'yel7'); R(629, 263, 6, 4, 'ink'); }
     // Tips hat
     E(566, 282, 9, 3, 'ink'); E(566, 281, 6, 1, 'n800'); R(563, 280, 2, 1, 'brass');
+    // Pigeons strutting and pecking on the towpath
+    g.anim(t => ([[150, 282, 0], [178, 279, 3]] as [number, number, number][]).forEach(([x0, y, ph]) => {
+      const q = (t + ph) * .3, T = (t + ph) % 6, x = Math.round(x0 + Math.sin(q) * 10), dir = Math.cos(q) > 0 ? 1 : -1, peck = T > 2 && T < 3.2 && Math.floor(t * 5) % 2;
+      E(x, y - 3, 3, 2, 'n600'); px(x - dir * 4, y - 3, 'n800'); R(x - dir, y - 4, 2, 1, 'n400');
+      const hx = x + dir * 3 - (dir < 0 ? 1 : 0), hy = peck ? y - 3 : y - 6;
+      R(hx, hy, 2, 2, 'n700'); px(hx + (dir > 0 ? 2 : -1), hy + 1, 'n900'); px(x - 1, y - 1, 'a600'); px(x + 1, y - 1, 'a600');
+    }));
   },
 
   islington(g, v) {
@@ -175,13 +216,19 @@ export const scenes: Record<string, (g: Kit, v: Vis) => void> = {
     const ivy = (x0: number, x1: number, n: number) => { for (let i = 0; i < n; i++) { const x = x0 + rnd() * (x1 - x0), len = 10 + rnd() * 70; for (let y = 40; y < 40 + len; y += 1) { const xx = x + Math.sin(y * 0.2 + i) * 2; if (rnd() > .35) px(xx, y, rnd() > .5 ? 'n900' : 'ink'); if (rnd() > .8) R(xx - 1, y, 3, 2, 'n900'); } } };
     ivy(0, 52, 26); ivy(204, 254, 22); ivy(60, 196, 8);
     for (let x = 70; x < 150; x++) { const s = (150 - x) * 0.22; for (let y = Math.round(224 - s); y <= 224 + s * 0.5; y++) if ((x + y) % 2 === 0 && y > 106) px(x, y, 'a300'); }
-    if (v.boat) { narrowboat(g, 168, 190, 236, BOAT, true, true, v.painted); R(150, 220, 6, 6, 'ink'); R(151, 221, 4, 4, 'a100'); }
-    if (v.label) { R(300, 204, 40, 10, 'n100'); T('NOT TO', 302, 206, 'a700'); }
+    g.shimmer(222, 258, 'n900', ['a500', 'a800']);
+    if (v.boat) floatBoat(g, 168, 190, 236, true, true, v.painted, 1.1, t => {
+      R(150, 220, 6, 6, 'ink'); R(151, 221, 4, 4, Math.floor(t * 7) % 9 === 0 ? 'a300' : 'a100');
+      if (v.label) { R(300, 204, 40, 10, 'n100'); T('NOT TO', 302, 206, 'a700'); }
+    });
     D(150, 246, 270, 6, 'n900', 'a900');
     R(0, 258, 640, 4, 'n500'); R(0, 262, 640, 26, 'n700');
     for (let y = 262, k = 0; y < 288; y += 6, k++) for (let x = (k % 2) * 5 - 5; x < 640; x += 10) { R(x + 1, y + 1, 8, 4, 'n600'); R(x + 2, y + 1, 5, 1, 'n500'); }
     for (let dy = -10; dy <= 10; dy++) for (let dx = -40; dx <= 40; dx++) if ((dx * dx) / 1600 + (dy * dy) / 100 < 1 && (dx + dy) % 2 === 0) px(302 + dx, 276 + dy, 'a800');
-    R(300, 150, 4, 126, 'ink'); R(296, 274, 12, 4, 'ink'); R(294, 136, 16, 4, 'ink'); R(296, 140, 12, 12, 'ink'); R(298, 142, 8, 8, 'a100'); R(300, 132, 4, 4, 'ink');
+    const lamp = () => { R(300, 150, 4, 126, 'ink'); R(296, 274, 12, 4, 'ink'); R(294, 136, 16, 4, 'ink'); R(296, 140, 12, 12, 'ink'); R(298, 142, 8, 8, 'a100'); R(300, 132, 4, 4, 'ink'); };
+    lamp();
+    // The lamp stands in front of the boat, and flickers now and then
+    g.anim(t => { if (v.boat) lamp(); if (Math.floor(t * 10) * 7 % 61 < 2) R(298, 142, 8, 8, 'a300'); });
     for (let dy = -22; dy <= 22; dy++) for (let dx = -22; dx <= 22; dx++) { const d = dx * dx + dy * dy; if (d < 484 && d > 80 && (dx + dy) % 2 === 0 && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) px(302 + dx, 146 + dy, 'a300'); }
     // A soggy exam paper, blown down from the school at Angel
     if (!v.paperTaken) { R(452, 268, 16, 11, 'n200'); R(452, 268, 16, 1, 'n100'); for (let y = 270; y < 278; y += 2) R(454, y, 10, 1, 'n500'); R(462, 272, 4, 4, 'a300'); }
@@ -235,15 +282,15 @@ export const scenes: Record<string, (g: Kit, v: Vis) => void> = {
     for (let i = 0; i < 50; i++) R(rnd() * 640, 230 + rnd() * 24, 3 + rnd() * 6, 1, rnd() > .5 ? 'wat3' : 'wat8');
     // Jasper's boat, with the hydroponic tomatoes on the roof
     const hull = (x: number, len: number, cab: string, trim: string, roof: string) => { R(x, 226, len, 18, 'ink'); R(x, 231, len, 3, trim); R(x, 226, len, 2, 'bg'); for (let j = 0; j < 18; j++) R(x + len, 226 + j, 16 - j * .8, 1, 'ink'); R(x + 18, 198, len - 36, 28, cab); R(x + 18, 198, len - 36, 2, trim); R(x + 14, 194, len - 28, 4, roof); for (let i = 0; i < 4; i++) { R(x + 30 + i * 26, 206, 14, 10, 'ink'); R(x + 31 + i * 26, 207, 12, 8, 'sky2'); } };
-    hull(440, 150, 'grn8', 'yel', 'n800');
-    for (let k = 0; k < 9; k++) { const x = 462 + k * 12; R(x, 188, 6, 6, k % 2 ? 'a600' : 'org'); C(x + 3, 186, 3, ['pink', 'yel', 'grn', 'org'][k % 4]); px(x + 3, 186, 'bg'); px(x + 1, 184, 'a600'); }
-    // the door and padlock
-    R(570, 204, 12, 22, 'ink'); R(571, 205, 10, 21, 'grn8');
-    if (v.padlockOpen) { R(566, 214, 4, 5, 'brass'); R(566, 211, 1, 3, 'n500'); } else { R(574, 214, 5, 5, 'brass'); R(575, 211, 3, 1, 'n500'); R(575, 212, 1, 2, 'n500'); R(577, 212, 1, 2, 'n500'); }
-    if (v.boat) {
-      narrowboat(g, 24, 196, 240, BOAT, false, false, v.painted);
-      C(110, 186, 5, 'ink'); C(110, 186, 3, 'yel'); C(126, 186, 5, 'ink'); C(126, 186, 3, 'yel'); L(110, 186, 118, 179, 'teal7'); L(118, 179, 126, 186, 'teal7'); L(114, 179, 122, 179, 'teal7');
-    }
+    g.shimmer(230, 254, 'wat', ['wat3', 'bg']);
+    g.anim(t => g.shift(Math.sin(t * .7 + 3) > .2 ? -1 : 0, () => {
+      hull(440, 150, 'grn8', 'yel', 'n800');
+      for (let k = 0; k < 9; k++) { const x = 462 + k * 12; R(x, 188, 6, 6, k % 2 ? 'a600' : 'org'); C(x + 3, 186, 3, ['pink', 'yel', 'grn', 'org'][k % 4]); px(x + 3, 186, 'bg'); px(x + 1, 184, 'a600'); }
+      // the door and padlock
+      R(570, 204, 12, 22, 'ink'); R(571, 205, 10, 21, 'grn8');
+      if (v.padlockOpen) { R(566, 214, 4, 5, 'brass'); R(566, 211, 1, 3, 'n500'); } else { R(574, 214, 5, 5, 'brass'); R(575, 211, 3, 1, 'n500'); R(575, 212, 1, 2, 'n500'); R(577, 212, 1, 2, 'n500'); }
+    }));
+    if (v.boat) floatBoat(g, 24, 196, 240, false, false, v.painted, 1.7, () => { C(110, 186, 5, 'ink'); C(110, 186, 3, 'yel'); C(126, 186, 5, 'ink'); C(126, 186, 3, 'yel'); L(110, 186, 118, 179, 'teal7'); L(118, 179, 126, 186, 'teal7'); L(114, 179, 122, 179, 'teal7'); });
     R(0, 256, 640, 32, 'n300'); D(0, 256, 640, 2, 'n500', 'n300');
     for (let k = 0; k < 10; k++) { const x = rnd() * 640, y = 262 + rnd() * 22; L(x, y, x + 6 + rnd() * 10, y + (rnd() - .5) * 6, 'n400'); }
     for (let k = 0; k < 6; k++) { const x = 30 + rnd() * 580, y = 266 + rnd() * 16; C(x, y, 3, ['yel', 'pink', 'teal', 'grn'][k % 4]); }
@@ -254,7 +301,7 @@ export const scenes: Record<string, (g: Kit, v: Vis) => void> = {
     // Water point: the only tap on this stretch, and a bucket
     R(402, 252, 5, 24, 'n600'); R(400, 274, 9, 4, 'n800'); R(398, 250, 13, 4, 'n500'); R(409, 254, 6, 3, 'n500'); R(401, 246, 7, 3, 'a600');
     R(380, 266, 14, 12, 'n500'); R(381, 267, 12, 2, 'n300'); R(379, 264, 16, 2, 'n600');
-    if (!v.hoseOff) { L(415, 256, 434, 258, 'grn8'); L(434, 258, 444, 250, 'grn8'); L(444, 250, 452, 236, 'grn8'); L(452, 236, 460, 196, 'grn8'); L(416, 257, 434, 259, 'grn'); }
+    if (!v.hoseOff) { const hose = () => { L(415, 256, 434, 258, 'grn8'); L(434, 258, 444, 250, 'grn8'); L(444, 250, 452, 236, 'grn8'); L(452, 236, 460, 196, 'grn8'); L(416, 257, 434, 259, 'grn'); }; hose(); g.anim(hose); }
     else if (v.boat) { L(415, 256, 300, 252, 'blu8'); L(300, 252, 230, 230, 'blu8'); }
     else { E(424, 270, 6, 3, 'grn8'); }
     // Fingerpost to the River Lea
@@ -273,6 +320,7 @@ export const scenes: Record<string, (g: Kit, v: Vis) => void> = {
     // The lock, thick with algae bloom
     R(10, 160, 120, 40, 'alg8'); D(10, 160, 120, 3, 'wat8', 'alg8');
     for (let i = 0; i < 46; i++) R(12 + rnd() * 110, 164 + rnd() * 34, 4 + rnd() * 8, 1 + (rnd() * 2 | 0), rnd() > .4 ? 'alg' : 'lime');
+    g.shimmer(162, 198, 'alg8', ['alg'], 8);
     // Our boat waiting in the lock, cut off by the lock walls
     if (v.boat) { g.ctx.save(); g.ctx.beginPath(); g.ctx.rect(10, 100, 120, 100); g.ctx.clip(); narrowboat(g, -112, 150, 232, BOAT, false, false, v.painted); g.ctx.restore(); }
     for (let x = 92; x < 118; x++) { R(x, 140, 1, 60, 'wood9'); if ((x - 92) % 8 === 0) R(x, 140, 1, 60, 'ink'); }
@@ -291,6 +339,8 @@ export const scenes: Record<string, (g: Kit, v: Vis) => void> = {
     if (!v.jarTaken) { R(520, 164, 9, 12, 'sky3'); R(519, 162, 11, 3, 'a600'); R(522, 167, 2, 6, 'bg'); }
     R(490, 112, 1, 18, 'ink'); E(490, 132, 7, 3, 'ink'); E(490, 135, 4, 1, 'yel');
     for (let i = 0; i < 18; i++) { const a = rnd() * Math.PI, r = 4 + rnd() * 10; px(468 + Math.cos(a) * r, 164 - Math.sin(a) * r, rnd() > .5 ? 'yel' : 'bg'); }
+    // Bursts of welding sparks from the workshop
+    g.anim(t => { if (t % 4.5 < 1.6) { const f = Math.floor(t * 12); R(467, 163, 3, 3, f % 2 ? 'bg' : 'yel'); for (let i = 0; i < 10; i++) { const a = ((i * 73 + f * 31) % 100) / 100 * Math.PI, r = 3 + ((i * 17 + f * 7) % 9); px(468 + Math.cos(a) * r, 164 - Math.sin(a) * r + (r > 8 ? (r - 8) * 2 : 0), i % 3 ? 'yel' : 'bg'); } } });
     R(572, 120, 52, 34, 'ink'); R(574, 122, 48, 30, 'yel'); R(597, 122, 2, 30, 'ink'); R(574, 136, 48, 2, 'ink');
     ([[566, 'a600'], [590, 'blu8'], [614, 'grn8']] as [number, string][]).forEach(([x, c]) => { R(x, 196, 20, 30, c); R(x, 196, 20, 2, 'ink'); R(x, 206, 20, 1, 'ink'); R(x, 216, 20, 1, 'ink'); R(x + 3, 198, 6, 1, 'n300'); });
     R(0, 200, 640, 88, 'n300'); D(0, 200, 640, 3, 'n500', 'n300');
@@ -342,10 +392,20 @@ export const scenes: Record<string, (g: Kit, v: Vis) => void> = {
     R(0, 152, 640, 100, 'n900'); D(0, 152, 640, 8, 'ink', 'n900');
     for (let i = 0; i < 360; i++) px(rnd() * 640, 146 + rnd() * 14, 'n700');
     for (let i = 0; i < 90; i++) R(rnd() * 640, 160 + rnd() * 90, 3 + rnd() * 8, 1, 'n800');
+    g.shimmer(162, 250, 'n900', ['n600', 'n700']);
+    g.anim(t => { // twinkling stars, clear of the pylons and the moon
+      let sd = 5; const r = () => { sd = (sd * 16807) % 2147483647; return (sd - 1) / 2147483646; };
+      for (let i = 0; i < 26; i++) {
+        const x = Math.floor(r() * 640), y = Math.floor(r() * 100), ph = r() * 6.28;
+        if (Math.abs(x - 150) < 24 || Math.abs(x - 400) < 24 || (Math.abs(x - 470) < 34 && y < 82)) continue;
+        const s = Math.sin(t * (1.5 + ph * .3) + ph);
+        if (s > .6) { px(x, y, 'n100'); if (s > .95) { px(x - 1, y, 'n500'); px(x + 1, y, 'n500'); px(x, y - 1, 'n500'); px(x, y + 1, 'n500'); } }
+      }
+    });
     for (let y = 155; y < 250; y += 3) { if (rnd() < .3) continue; const w = 3 + (y - 155) * .14 + rnd() * 6; R(470 - w / 2 + (rnd() - .5) * 10, y, w, 1, y < 190 ? 'n200' : rnd() > .5 ? 'n400' : 'n600'); }
     const swanW = (x: number, y: number) => { D(x - 9, y + 4, 20, 3, 'n800', 'n900'); E(x, y, 9, 3, 'n300'); R(x - 7, y - 3, 9, 2, 'n200'); R(x + 6, y - 11, 2, 10, 'n300'); R(x + 6, y - 12, 5, 2, 'n300'); px(x + 11, y - 11, 'a600'); px(x + 8, y - 12, 'ink'); };
-    swanW(330, 206); if (v.swanGone) swanW(520, 214);
-    if (v.boat) narrowboat(g, 70, 196, 220, BOAT, true, false, v.painted);
+    g.anim(t => { swanW(330 + Math.round(Math.sin(t * 0.25) * 5), 206 + Math.round(Math.sin(t * 1.4) * .6)); if (v.swanGone) swanW(520 + Math.round(Math.sin(t * 0.25 + 1) * 5), 214 + Math.round(Math.sin(t * 1.4 + 2) * .6)); });
+    if (v.boat) floatBoat(g, 70, 196, 220, true, false, v.painted, 2.2);
     R(0, 252, 640, 36, 'n900'); D(0, 252, 640, 3, 'ink', 'n900'); R(0, 264, 640, 16, 'n800');
     for (let i = 0; i < 260; i++) px(rnd() * 640, 264 + rnd() * 16, 'n700');
     for (let i = 0; i < 80; i++) R(rnd() * 640, 253 + rnd() * 9, 1, 3, 'n800');
@@ -383,7 +443,8 @@ export const scenes: Record<string, (g: Kit, v: Vis) => void> = {
     R(148, 156, 14, 64, 'ink'); R(149, 157, 12, 62, 'n100'); for (let k = 0; k < 6; k++) { R(149, 160 + k * 10, 5, 1, 'ink'); T(String(6 - k), 156, 158 + k * 10, 'ink'); }
     R(0, 224, 640, 32, 'n500'); D(0, 224, 640, 3, 'n600', 'n500'); D(190, 227, 260, 4, 'n600', 'n500');
     for (let i = 0; i < 70; i++) R(rnd() * 640, 230 + rnd() * 24, 3 + rnd() * 8, 1, rnd() > .5 ? 'n400' : 'n600');
-    if (v.boat) narrowboat(g, -10, 200, 200, BOAT, false, false, v.painted);
+    g.shimmer(160, 254, 'n500', ['n300', 'n400']);
+    if (v.boat) floatBoat(g, -10, 200, 200, false, false, v.painted, .6);
     R(0, 256, 640, 32, 'n300');
     for (let y = 258, k = 0; y < 288; y += 6, k++) for (let x = (k % 2) * 6 - 6; x < 640; x += 12) { R(x + 1, y + 1, 10, 4, 'n200'); R(x + 1, y + 4, 10, 1, 'n400'); }
     R(0, 256, 640, 2, 'n500'); R(0, 258, 640, 1, 'ink');
@@ -392,7 +453,7 @@ export const scenes: Record<string, (g: Kit, v: Vis) => void> = {
     L(564, 284, 570, 246, 'ink'); L(632, 284, 626, 246, 'ink');
     R(556, 212, 84, 36, 'ink'); R(558, 214, 80, 32, 'n100'); T('LIMEHOUSE', 562, 218, 'ink'); T('LOCK - CALL', 562, 226, 'a700'); T('ON THE RADIO', 562, 236, 'ink');
     R(586, 186, 26, 24, 'ink'); R(588, 188, 22, 14, 'n800'); for (let y = 190; y < 200; y += 2) R(590, y, 12, 1, 'n600'); R(604, 191, 4, 4, 'a600'); R(605, 204, 3, 3, 'yel'); R(610, 172, 1, 14, 'ink');
-    ([[120, 60], [134, 54], [360, 90]] as [number, number][]).forEach(([x, y]) => { px(x - 2, y - 1, 'ink'); px(x - 1, y, 'ink'); px(x, y, 'ink'); px(x + 1, y, 'ink'); px(x + 2, y - 1, 'ink'); });
+    flock(g, [[120, 60, -7, 0], [134, 54, -7, 1], [360, 90, 5, 2]], 'ink');
   },
 
   cabin(g, v) {
@@ -423,9 +484,19 @@ export const scenes: Record<string, (g: Kit, v: Vis) => void> = {
     R(52, 160, 32, 26, 'n900'); R(54, 162, 28, 22, 'a800');
     for (let i = 0; i < 40; i++) { const fx = 56 + rnd() * 24, fy = 184 - rnd() * 18; R(fx, fy, 2, 2 + rnd() * 4, rnd() > .5 ? 'org' : rnd() > .4 ? 'yel' : 'a500'); }
     R(54, 180, 28, 4, 'wood9'); R(56, 178, 6, 3, 'wood7'); R(70, 179, 8, 3, 'wood7');
+    g.anim(t => { // the fire dances, and the embers glow
+      const f = Math.floor(t * 10);
+      for (let x = 54; x < 82; x += 2) {
+        const n = Math.sin(x * 1.7 + f * .9) * .5 + Math.sin(x * .6 - f * 1.3) * .5, h = Math.round(12 + n * 6 + (x > 60 && x < 76 ? 4 : 0));
+        for (let k = 0; k < h && 180 - k >= 162; k++) R(x, 180 - k, 2, 1, k < h * .35 ? 'yel' : k < h * .7 ? 'org' : 'a500');
+        if ((x + f) % 3 === 0 && 178 - h - (f % 3) > 162) px(x + 1, 178 - h - (f % 3), 'yel');
+      }
+      R(54, 180, 28, 4, 'wood9'); R(56, 178, 6, 3, 'wood7'); R(70, 179, 8, 3, 'wood7'); px(58 + (f % 6) * 4, 181, 'org'); px(60 + ((f * 3) % 5) * 4, 182, 'yel');
+    });
     R(52, 160, 32, 1, 'brass'); R(52, 185, 32, 1, 'brass'); R(44, 194, 48, 3, 'n800'); R(46, 202, 6, 4, 'ink'); R(84, 202, 6, 4, 'ink');
     R(36, 140, 64, 2, 'brass');
-    E(80, 135, 9, 6, 'teal'); R(72, 136, 17, 4, 'teal'); R(87, 130, 6, 2, 'teal7'); R(76, 127, 8, 2, 'ink'); R(86, 124, 1, 4, 'n300'); px(87, 121, 'n300'); px(86, 118, 'n400');
+    E(80, 135, 9, 6, 'teal'); R(72, 136, 17, 4, 'teal'); R(87, 130, 6, 2, 'teal7'); R(76, 127, 8, 2, 'ink');
+    g.anim(t => { for (let k = 0; k < 4; k++) { const p = (t * .5 + k / 4) % 1, z = p < .4 ? 1 : 2; if (p < .85) R(88 + Math.round(Math.sin(t * 2 + k * 1.7) * 1.5 + p * 4), 128 - p * 26, z, z, p < .5 ? 'n100' : 'n300'); } });
     R(100, 210, 30, 24, 'wood7'); for (let i = 0; i < 4; i++) E(108 + i * 5, 206 - (i % 2) * 4, 6, 3, i % 2 ? 'wood' : 'wood9');
     R(146, 118, 120, 4, 'wood9'); R(146, 82, 120, 3, 'wood9');
     const spines = ['a600', 'yel', 'teal7', 'pur', 'grn8', 'blu', 'org', 'pink', 'a800', 'blu8', 'yel7', 'teal'];
@@ -466,7 +537,13 @@ export const scenes: Record<string, (g: Kit, v: Vis) => void> = {
     for (let x = 200; x < 440; x += 6) { R(x + 1, 250, 2, 2, 'bg'); R(x + 1, 284, 2, 2, 'bg'); }
     for (let x = 204; x < 440; x += 12) for (let k = 0; k < 8; k++) px(x + (k % 2) * 6, 253 + k * 4, 'bg');
     R(136, 178, 104, 28, 'a600'); R(136, 178, 104, 3, 'a400'); R(136, 206, 104, 34, 'wood9'); for (let x = 140; x < 240; x += 24) { R(x, 182, 1, 22, 'a700'); }
-    E(170, 176, 14, 6, 'ink'); C(184, 172, 5, 'ink'); px(181, 166, 'ink'); px(182, 167, 'ink'); px(187, 166, 'ink'); px(186, 167, 'ink'); R(154, 178, 6, 2, 'ink'); R(182, 172, 2, 1, 'n500'); R(186, 172, 2, 1, 'n500');
+    g.anim(t => { // the cat: breathing, tail swishing, now and then looking up
+      const br = Math.sin(t * 1.4) > 0, look = (t % 13) > 10.4, tw = (t % 5.3) < .3, hy = look ? 167 : 172, hx = look ? 185 : 184;
+      E(170, 176, 14, 6, 'ink'); if (br) R(160, 169, 20, 1, 'ink');
+      for (let k = 0; k < 9; k++) R(157 - k, 179 + Math.round(Math.sin(k * .5 + t * 1.6) * k * .3) - (k > 6 ? 1 : 0), 2, 2, 'ink');
+      C(hx, hy, 5, 'ink'); px(hx - 3, hy - 6, 'ink'); px(hx - 2, hy - 5, 'ink'); px(hx + (tw ? 4 : 3), hy - 6, 'ink'); px(hx + 2, hy - 5, 'ink');
+      if (look) { px(hx - 2, hy, 'yel'); px(hx + 2, hy, 'yel'); px(hx, hy + 2, 'pink'); } else { R(hx - 2, hy, 2, 1, 'n500'); R(hx + 2, hy, 2, 1, 'n500'); }
+    });
     R(250, 196, 150, 6, 'wood9'); R(254, 202, 6, 46, 'wood9'); R(390, 202, 6, 46, 'wood9');
     R(274, 188, 92, 9, 'stock'); R(274, 188, 92, 1, 'stock7'); L(278, 194, 312, 190, 'blu'); L(312, 190, 356, 192, 'blu'); C(330, 192, 2, 'a600');
     R(370, 186, 12, 10, 'bg'); R(382, 188, 3, 5, 'bg'); R(371, 187, 10, 3, 'wood9');

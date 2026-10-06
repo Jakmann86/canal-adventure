@@ -1,6 +1,6 @@
 // The engine: one 640×400 LucasArts-style screen (a 640×288 scene, the sentence
 // line, nine verbs and the inventory), laid out at 2× like the design.
-import { kit, type DrawOpts } from '../art/kit';
+import { kit, type DrawOpts, type Kit } from '../art/kit';
 import { scenes as ART } from '../art/scenes';
 import { icons } from '../art/icons';
 import { teen } from '../art/sprites';
@@ -64,6 +64,7 @@ export class Game {
   private canvas!: HTMLCanvasElement;
   private ctx!: CanvasRenderingContext2D;
   private bg = document.createElement('canvas');
+  private bgKit: Kit | null = null;
   private speechEl!: HTMLElement;
   private sentenceEl!: HTMLElement;
   private verbBox!: HTMLElement;
@@ -197,19 +198,22 @@ export class Game {
       this.bgKey = key;
       const b = this.bg.getContext('2d')!; b.imageSmoothingEnabled = false;
       b.clearRect(0, 0, W, H);
-      ART[sc.art](kit(b, this.opts), vis);
+      this.bgKit = kit(b, this.opts);
+      ART[sc.art](this.bgKit, vis);
       this.renderHotspotOutlines();
     }
     const c = this.ctx;
     c.clearRect(0, 0, W, H);
     c.drawImage(this.bg, 0, 0);
+    // The scene's living layers: water glints, bobbing boats, smoke, birds
+    if (this.bgKit?.anims.length) { this.bgKit.setCtx(c); this.bgKit.anims.forEach(f => f(this.t / 1000)); }
     const g = kit(c, this.opts);
     sc.fx?.(g, s, this.t);
     const now = this.t;
     const list: { b: number; draw: () => void }[] = [];
     for (const a of this.actors()) {
       const talking = this.speech?.who === a.id;
-      list.push({ b: a.b, draw: () => this.drawActor(g, a, { ...a.pose, talk: talking, t: now }) });
+      list.push({ b: a.b, draw: () => this.drawActor(g, a, { ...a.pose, talk: talking, t: now, ph: a.x * 0.091 }) });
     }
     const p = this.player, frame = p.walkT > 0 ? ((p.walkT / 140 | 0) % 2) + 1 : 0;
     list.push({ b: sc.baseline + 0.5, draw: () => this.drawActor(g, { id: 'player', sprite: teen, x: p.x, b: sc.baseline, flip: p.flip, w: 12 }, { walk: frame, talk: this.speech?.who === 'player', t: now }) });

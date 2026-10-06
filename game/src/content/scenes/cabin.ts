@@ -30,9 +30,6 @@ export const cabin: SceneDef = {
   walk: () => [120, 600],
   vis: s => ({ charged: !!s.f.charged, plotted: !!s.f.plotted }),
   entry: () => [588, true],
-  fx: (g, _s, t) => { // the stove's fire flickers
-    for (let i = 0; i < 6; i++) { const x = 58 + ((i * 7 + (t / 90 | 0) * 3) % 22), h = 3 + ((i * 5 + (t / 120 | 0)) % 6); g.R(x, 180 - h, 2, h, i % 2 ? 'yel' : 'org'); }
-  },
   enter: async s => { if (!s.is('sawCabin')) { s.set('sawCabin'); await s.me('Dot’s cabin. It smells of woodsmoke, books and cat.'); } },
   hotspots: (s): Hotspot[] => [
     { id: 'stove', name: 'wood-burning stove', rect: [40, 120, 60, 86], walkTo: 130, look: 'A little wood-burner, still warm. Dot never let it go out.',

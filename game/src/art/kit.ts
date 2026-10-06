@@ -17,6 +17,7 @@ export const PALETTE: Record<string, string> = {
   wat: 'oklch(0.56 0.07 185)', wat8: 'oklch(0.44 0.06 190)', wat3: 'oklch(0.7 0.06 185)',
   wood: 'oklch(0.6 0.09 60)', wood3: 'oklch(0.7 0.08 70)', wood7: 'oklch(0.47 0.08 55)', wood9: 'oklch(0.35 0.06 50)',
   brass: 'oklch(0.78 0.13 85)', brass7: 'oklch(0.6 0.11 75)',
+  kha: 'oklch(0.52 0.06 115)', kha7: 'oklch(0.4 0.05 115)', kha3: 'oklch(0.62 0.07 110)', dye: 'oklch(0.36 0.07 40)', dye3: 'oklch(0.5 0.1 45)',
   // Added for the game: glow, algae and lime
   glow: 'oklch(0.88 0.17 165)', glow7: 'oklch(0.66 0.14 170)', alg: 'oklch(0.62 0.13 135)', alg8: 'oklch(0.48 0.1 140)',
   lime: 'oklch(0.8 0.15 135)', leaf: 'oklch(0.52 0.12 148)',
@@ -52,10 +53,19 @@ export interface Kit {
   bands(y0: number, cols: C[], h: number, w?: number): void;
   brick(x: number, y: number, w: number, h: number, base: C, mortar: C, alt?: C): void;
   sprite<A extends unknown[]>(fn: (g: Kit, x: number, b: number, ...a: A) => void, x: number, b: number, flip: boolean, ...a: A): void;
+  /** Registers a layer redrawn every frame over the cached background; `t` is in seconds. */
+  anim(f: (t: number) => void): void;
+  anims: ((t: number) => void)[];
+  /** Points the kit at another canvas (the live one, when running anims). */
+  setCtx(c: CanvasRenderingContext2D): void;
+  /** Draws `fn` moved down by `dy` pixels (boats bobbing). */
+  shift(dy: number, fn: () => void): void;
+  /** Glints that come and go on runs of colour `key` between rows y0 and y1 (water). */
+  shimmer(y0: number, y1: number, key: C, cols: C[], n?: number): void;
 }
 
 export function kit(ctx: CanvasRenderingContext2D, opt: DrawOpts): Kit {
-  let seed = 11;
+  let seed = 11; const base = ctx;
   const rnd = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
   const col = (c: string) => PALETTE[c] || c;
   const R = (x: number, y: number, w: number, h: number, c: string) => {
@@ -105,6 +115,29 @@ export function kit(ctx: CanvasRenderingContext2D, opt: DrawOpts): Kit {
   const sprite = <A extends unknown[]>(fn: (g: Kit, x: number, b: number, ...a: A) => void, x: number, b: number, flip: boolean, ...a: A) => {
     ctx.save(); ctx.translate(Math.round(x), Math.round(b)); ctx.scale(flip ? -2 : 2, 2); fn(api, 0, 0, ...a); ctx.restore();
   };
-  const api: Kit = { ctx, R, px, D, E, C, L, T, rnd, bands, brick, sprite };
+  const anims: ((t: number) => void)[] = [], anim = (f: (t: number) => void) => { anims.push(f); };
+  const setCtx = (c: CanvasRenderingContext2D) => { ctx = c; api.ctx = c; ctx.imageSmoothingEnabled = false; };
+  const shift = (dy: number, fn: () => void) => { ctx.save(); ctx.translate(0, dy); fn(); ctx.restore(); };
+  // Spots are picked once, from the finished background, so they only land on open water.
+  const shimmer = (y0: number, y1: number, key: string, cols: string[], n = 36) => {
+    let spots: [number, number, number, number, string][] | null = null;
+    anim(t => {
+      if (!spots) {
+        spots = [];
+        const W = base.canvas.width, d = base.getImageData(0, 0, W, base.canvas.height).data;
+        const tc = document.createElement('canvas').getContext('2d')!; tc.fillStyle = col(key); tc.fillRect(0, 0, 1, 1);
+        const [r0, g0, b0] = tc.getImageData(0, 0, 1, 1).data;
+        const ok = (x: number, y: number) => { if (x < 0 || x >= W) return false; const i = (y * W + x) * 4; return Math.abs(d[i] - r0) + Math.abs(d[i + 1] - g0) + Math.abs(d[i + 2] - b0) < 18; };
+        let sd = 97; const rr = () => { sd = (sd * 16807) % 2147483647; return (sd - 1) / 2147483646; };
+        for (let i = 0; i < n * 10 && spots.length < n; i++) {
+          const x = Math.floor(rr() * W), y = Math.floor(y0 + rr() * (y1 - y0)), w = 3 + Math.floor(rr() * 6);
+          let good = true; for (let j = -3; j < w + 3 && good; j++) good = ok(x + j, y);
+          if (good) spots.push([x, y, w, rr() * 6.28, cols[i % cols.length]]);
+        }
+      }
+      spots.forEach(([x, y, w, ph, c]) => { const v = Math.sin(t * 1.1 + ph); if (v > 0) R(x + Math.round(Math.sin(t * 0.5 + ph) * 2), y, Math.max(1, Math.round(w * v)), 1, c); });
+    });
+  };
+  const api: Kit = { ctx, R, px, D, E, C, L, T, rnd, bands, brick, sprite, anim, anims, setCtx, shift, shimmer };
   return api;
 }

@@ -88,7 +88,7 @@ export const stonebridge: SceneDef = {
     { id: 'drums', name: 'oil drums', rect: [564, 194, 72, 34], walkTo: 524, look: 'Oil drums. One says DIESEL, one says TEA, one says DO NOT.' },
     { id: 'lock', name: 'Stonebridge Lock', rect: [0, 132, 140, 70], walkTo: 90, look: 'Stonebridge Lock. The water is thick with algae, bright green like pea soup.', use: { jar: scoop } },
     ...when(s.boatAt === 'stonebridge', boat(s, [10, 120, 120, 60], useBoat, { walkTo: 90, use: { jar: scoop } })),
-    { id: 'keith', name: 'Keith', rect: [540, 224, 32, 60], walkTo: 524, look: 'Keith: about eighty, blue overalls, and hair a suspiciously young shade of brown.',
+    { id: 'keith', name: 'Keith', rect: [540, 224, 32, 60], walkTo: 524, look: 'Keith: about eighty, an oily khaki coat, safety specs, and hair a suspiciously young shade of brown.',
       verbs: { 'Talk to': keith }, give: { paint: givePaint, tin: 'He pushes it back. “Full, not empty. That’s the idea.”', chart: '“You keep that. It’s for matching.”' } },
     exit('toWick', 'the towpath to Hackney Wick', [0, 210, 10, 78], 'hackneywick', 'South down the River Lea towpath to Hackney Wick.', 12),
     exit('toCheshunt', 'the towpath to Cheshunt', [600, 236, 40, 52], 'cheshunt', 'North up the Lea, past the reservoirs. It gets dark early out here.', 524),
