@@ -3,9 +3,11 @@
 import type { Kit } from './kit';
 import { sheetSprite } from './images';
 import rozPlay from './img/roz-play.png';
+import rozListen from './img/roz-listen.png';
 import rozTalk from './img/roz-talk.png';
 
-export interface Pose { walk?: number; talk?: boolean; t?: number; phone?: boolean; ph?: number }
+/** `talk`: saying a line now. `chat`: in a conversation with the player. */
+export interface Pose { walk?: number; talk?: boolean; chat?: boolean; t?: number; phone?: boolean; ph?: number }
 
 export type SpriteFn = (g: Kit, x: number, b: number, p: Pose) => void;
 
@@ -70,9 +72,9 @@ export const boater: SpriteFn = (g, x, b, p) => {
 };
 
 // Roz, the Camden busker: grey curls, granny glasses, purple coat, tiered skirt and
-// guitar. She's a hand-placed pixel-art sprite sheet (art-src/roz.py); this code-drawn
-// version stands in while the images load.
-export const busker: SpriteFn = (g, x, b, p) => busker1x(g, x, b, p);
+// guitar. She's a pixel-art sprite sheet (art-src/roz.py); this code-drawn version
+// stands in while the images load.
+export const busker: SpriteFn = (g, x, b, p) => rozSheets(g, x, b, p);
 const buskerCode: SpriteFn = (g, x, b, p) => {
   const { R, px, E } = g;
   const t = secs(p), br = Math.sin(t * 2) > .5 ? 1 : 0, blink = (t % 4.1) < .14, strum = Math.floor(t * 7) % 2, nod = Math.sin(t * 3.2) > .7 ? 1 : 0;
@@ -195,9 +197,10 @@ export const swan: SpriteFn = (g, x, b, p) => {
   if (hiss) R(x + 22, b - 25 + n, 2, 1, 'a700');
 };
 
-const busker1x = sheetSprite({
-  w: 72, h: 120, cx: 24,
-  anims: { play: { src: rozPlay, frames: 24, fps: 8 }, talk: { src: rozTalk, frames: 8, fps: 8 } },
-  pick: p => p.talk ? 'talk' : 'play',
+// Side-on while she plays; she turns to face you while you're talking to her.
+const rozSheets = sheetSprite({
+  w: 36, h: 60, cx: 14,
+  anims: { play: { src: rozPlay, frames: 24, fps: 8 }, listen: { src: rozListen, frames: 16, fps: 8 }, talk: { src: rozTalk, frames: 8, fps: 8 } },
+  pick: p => p.talk ? 'talk' : p.chat ? 'listen' : 'play',
   fallback: buskerCode,
 });

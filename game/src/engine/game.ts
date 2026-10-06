@@ -51,6 +51,8 @@ export class Game {
   busy = 0;
   private speech: { who: string; text: string; until: number; done: () => void } | null = null;
   private dialogue: ((i: number) => void) | null = null;
+  /** The character the player is in conversation with, who turns to face them. */
+  private chatWith: string | null = null;
   private invPage = 0;
   private t = 0;
   private bgKey = '';
@@ -213,7 +215,7 @@ export class Game {
     const list: { b: number; draw: () => void }[] = [];
     for (const a of this.actors()) {
       const talking = this.speech?.who === a.id;
-      list.push({ b: a.b, draw: () => this.drawActor(g, a, { ...a.pose, talk: talking, t: now, ph: a.x * 0.091 }) });
+      list.push({ b: a.b, draw: () => this.drawActor(g, a, { ...a.pose, talk: talking, chat: this.chatWith === a.id, t: now, ph: a.x * 0.091 }) });
     }
     const p = this.player, frame = p.walkT > 0 ? ((p.walkT / 140 | 0) % 2) + 1 : 0;
     list.push({ b: sc.baseline + 0.5, draw: () => this.drawActor(g, { id: 'player', sprite: teen, x: p.x, b: sc.baseline, flip: p.flip, w: 12 }, { walk: frame, talk: this.speech?.who === 'player', t: now }) });
@@ -386,6 +388,7 @@ export class Game {
     } else if (verb === 'Give') { r = undefined; fallback = 'Give what? I should pick something from my pockets first.'; }
     else { r = verb === 'Look at' ? h.verbs?.['Look at'] ?? h.look : h.verbs?.[verb]; fallback = DEFAULTS[verb]; }
     if (!r && !fallback) return;
+    if ((verb === 'Talk to' || verb === 'Give') && this.actors().some(a => a.id === h.id)) this.chatWith = h.id;
     await this.run(s => this.respond(s, r, fallback));
   }
 
@@ -403,7 +406,7 @@ export class Game {
     catch (err) { console.error(err); }
     finally {
       this.busy--;
-      if (!this.busy) { this.state.x = this.player.x; this.state.flip = this.player.flip; save(this.state); this.renderHotspotOutlines(); }
+      if (!this.busy) { this.chatWith = null; this.state.x = this.player.x; this.state.flip = this.player.flip; save(this.state); this.renderHotspotOutlines(); }
     }
   }
 
@@ -420,6 +423,7 @@ export class Game {
   }
 
   say(who: string, text: string): Promise<void> {
+    if (who !== 'player' && this.actors().some(a => a.id === who)) this.chatWith = who;
     return new Promise(done => {
       const ms = Math.max(1700, 1000 + text.length * 55);
       this.speech = { who, text, until: performance.now() + ms, done };
