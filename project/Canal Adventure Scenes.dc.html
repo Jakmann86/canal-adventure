@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="_ds/modernist-e449635f-833c-4042-807d-c7cbf5c7c2a9/styles.css">
+<script src="_ds/modernist-e449635f-833c-4042-807d-c7cbf5c7c2a9/_ds_bundle.js"></script>
+<script src="pixel-art.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600&amp;display=swap">
+<style>body{margin:0;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body)}a{color:var(--color-accent-700)}a:hover{color:var(--color-accent-600)}</style>
+</helmet>
+<section data-screen-label="Turn 4" style="display:flex;flex-direction:column;gap:var(--space-8);padding:64px 64px 0">
+  <div style="display:flex;flex-direction:column;gap:var(--space-2);border-bottom:2px solid var(--color-text);padding-bottom:var(--space-6);max-width:1280px">
+    <div style="font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--color-accent-700)">Turn 4 — opening scene &amp; boatyard</div>
+    <div style="font-family:var(--font-heading);font-weight:800;font-size:40px;line-height:1.05">Little Venice and Stonebridge Lock</div>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:64px;align-items:flex-start">
+    <div id="4a" data-screen-label="4a Little Venice" style="display:flex;flex-direction:column;gap:var(--space-3);width:1284px">
+      <div style="display:flex;align-items:center;gap:var(--space-3)">
+        <span style="background:var(--color-accent);color:var(--color-bg);font-weight:800;font-size:16px;padding:4px 10px">4a</span>
+        <span style="font-weight:800;font-size:24px">Little Venice — opening scene</span>
+        <span style="font-size:16px;color:var(--color-neutral-700);white-space:nowrap">Puzzle: Pythagoras across the pool. 30² + 40² = d².</span>
+      </div>
+      <div style="border:2px solid var(--color-text);display:flex;flex-direction:column;background:var(--color-bg)">
+        <div style="position:relative;width:1280px;height:576px;cursor:crosshair;overflow:hidden">
+          <canvas ref="{{ refG }}" width="640" height="288" style="display:block;width:1280px;height:576px;image-rendering:pixelated"></canvas>
+          <sc-for list="{{ hotsG }}" as="h" hint-placeholder-count="0">
+            <div onMouseEnter="{{ h.enter }}" onMouseLeave="{{ h.leave }}" style="position:absolute;left:{{ h.left }};top:{{ h.top }};width:{{ h.width }};height:{{ h.height }}">
+              <sc-if value="{{ showHotspots }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;outline:2px dashed var(--color-accent-300);outline-offset:-2px"></div></sc-if>
+            </div>
+          </sc-for>
+          <div style="position:absolute;left:40px;top:24px;width:600px;pointer-events:none;font-family:'Pixelify Sans',monospace;font-weight:600;font-size:30px;line-height:1.15;color:var(--color-bg);text-shadow:2px 0 var(--color-text),-2px 0 var(--color-text),0 2px var(--color-text),0 -2px var(--color-text),2px 2px var(--color-text),-2px -2px var(--color-text),2px -2px var(--color-text),-2px 2px var(--color-text);text-wrap:pretty">She’s yours now. First lesson: the pool’s a right triangle, 30 metres by 40. How far is it straight across?</div>
+        </div>
+        <div style="border-top:2px solid var(--color-text);height:44px;display:flex;align-items:center;justify-content:center;gap:10px;padding:0 var(--space-4);background:var(--color-text);color:oklch(0.74 0.12 190);font-family:'Pixelify Sans',monospace;font-size:28px;font-weight:400;white-space:nowrap">
+          <span>{{ sentVerbG }}</span><span style="color:oklch(0.87 0.16 95)">{{ hoverG }}</span>
+        </div>
+        <div style="border-top:2px solid var(--color-text);display:grid;grid-template-columns:3fr 2fr;gap:2px;background:var(--color-text);height:178px;padding:6px 6px 8px">
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:2px">
+            <sc-for list="{{ verbsG }}" as="v" hint-placeholder-count="9">
+              <sc-if value="{{ v.on }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ v.pick }}" style="all:unset;cursor:pointer;background:var(--color-text);color:oklch(0.87 0.16 95);font-family:'Pixelify Sans',monospace;font-weight:600;font-size:30px;padding:0 var(--space-4);display:flex;align-items:center;white-space:nowrap">{{ v.label }}</button>
+              </sc-if>
+              <sc-if value="{{ v.off }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ v.pick }}" style="all:unset;cursor:pointer;background:var(--color-text);color:oklch(0.6 0.1 195);font-family:'Pixelify Sans',monospace;font-weight:400;font-size:30px;padding:0 var(--space-4);display:flex;align-items:center;white-space:nowrap" style-hover="color:oklch(0.85 0.1 190)">{{ v.label }}</button>
+              </sc-if>
+            </sc-for>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:2px">
+            <sc-for list="{{ invG }}" as="it" hint-placeholder-count="4">
+              <div onMouseEnter="{{ it.enter }}" onMouseLeave="{{ it.leave }}" style="background:oklch(0.3 0.03 260);display:flex;align-items:center;justify-content:flex-start;padding-left:var(--space-3);cursor:pointer" style-hover="background:oklch(0.38 0.05 260)">
+                <canvas ref="{{ it.ref }}" width="36" height="26" style="width:108px;height:78px;image-rendering:pixelated;display:block"></canvas>
+              </div>
+            </sc-for>
+            <div style="background:oklch(0.3 0.03 260)"></div><div style="background:oklch(0.3 0.03 260)"></div><div style="background:oklch(0.3 0.03 260)"></div><div style="background:oklch(0.3 0.03 260)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="4b" data-screen-label="4b Stonebridge Boatyard" style="display:flex;flex-direction:column;gap:var(--space-3);width:1284px">
+      <div style="display:flex;align-items:center;gap:var(--space-3)">
+        <span style="background:var(--color-accent);color:var(--color-bg);font-weight:800;font-size:16px;padding:4px 10px">4b</span>
+        <span style="font-weight:800;font-size:24px">Stonebridge Lock — boatyard</span>
+        <span style="font-size:16px;color:var(--color-neutral-700);white-space:nowrap">Puzzle: hull area ÷ coverage, then round up.</span>
+      </div>
+      <div style="border:2px solid var(--color-text);display:flex;flex-direction:column;background:var(--color-bg)">
+        <div style="position:relative;width:1280px;height:576px;cursor:crosshair;overflow:hidden">
+          <canvas ref="{{ refH }}" width="640" height="288" style="display:block;width:1280px;height:576px;image-rendering:pixelated"></canvas>
+          <sc-for list="{{ hotsH }}" as="h" hint-placeholder-count="0">
+            <div onMouseEnter="{{ h.enter }}" onMouseLeave="{{ h.leave }}" style="position:absolute;left:{{ h.left }};top:{{ h.top }};width:{{ h.width }};height:{{ h.height }}">
+              <sc-if value="{{ showHotspots }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;outline:2px dashed var(--color-accent-300);outline-offset:-2px"></div></sc-if>
+            </div>
+          </sc-for>
+          <div style="position:absolute;left:24px;top:20px;width:560px;pointer-events:none;font-family:'Pixelify Sans',monospace;font-weight:600;font-size:30px;line-height:1.15;color:var(--color-bg);text-shadow:2px 0 var(--color-text),-2px 0 var(--color-text),0 2px var(--color-text),0 -2px var(--color-text),2px 2px var(--color-text),-2px -2px var(--color-text),2px -2px var(--color-text),-2px 2px var(--color-text);text-wrap:pretty">Two sides, 18 by 0.7 metres each. A tin of blacking covers 6 square metres. How many tins? No half tins, mind.</div>
+        </div>
+        <div style="border-top:2px solid var(--color-text);height:44px;display:flex;align-items:center;justify-content:center;gap:10px;padding:0 var(--space-4);background:var(--color-text);color:oklch(0.74 0.12 190);font-family:'Pixelify Sans',monospace;font-size:28px;font-weight:400;white-space:nowrap">
+          <span>{{ sentVerbH }}</span><span style="color:oklch(0.87 0.16 95)">{{ hoverH }}</span>
+        </div>
+        <div style="border-top:2px solid var(--color-text);display:grid;grid-template-columns:3fr 2fr;gap:2px;background:var(--color-text);height:178px;padding:6px 6px 8px">
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:2px">
+            <sc-for list="{{ verbsH }}" as="v" hint-placeholder-count="9">
+              <sc-if value="{{ v.on }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ v.pick }}" style="all:unset;cursor:pointer;background:var(--color-text);color:oklch(0.87 0.16 95);font-family:'Pixelify Sans',monospace;font-weight:600;font-size:30px;padding:0 var(--space-4);display:flex;align-items:center;white-space:nowrap">{{ v.label }}</button>
+              </sc-if>
+              <sc-if value="{{ v.off }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ v.pick }}" style="all:unset;cursor:pointer;background:var(--color-text);color:oklch(0.6 0.1 195);font-family:'Pixelify Sans',monospace;font-weight:400;font-size:30px;padding:0 var(--space-4);display:flex;align-items:center;white-space:nowrap" style-hover="color:oklch(0.85 0.1 190)">{{ v.label }}</button>
+              </sc-if>
+            </sc-for>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:2px">
+            <sc-for list="{{ invH }}" as="it" hint-placeholder-count="4">
+              <div onMouseEnter="{{ it.enter }}" onMouseLeave="{{ it.leave }}" style="background:oklch(0.3 0.03 260);display:flex;align-items:center;justify-content:flex-start;padding-left:var(--space-3);cursor:pointer" style-hover="background:oklch(0.38 0.05 260)">
+                <canvas ref="{{ it.ref }}" width="36" height="26" style="width:108px;height:78px;image-rendering:pixelated;display:block"></canvas>
+              </div>
+            </sc-for>
+            <div style="background:oklch(0.3 0.03 260)"></div><div style="background:oklch(0.3 0.03 260)"></div><div style="background:oklch(0.3 0.03 260)"></div><div style="background:oklch(0.3 0.03 260)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section data-screen-label="Turn 3" style="display:flex;flex-direction:column;gap:var(--space-8);padding:64px 64px 0">
+  <div style="display:flex;flex-direction:column;gap:var(--space-2);border-bottom:2px solid var(--color-text);padding-bottom:var(--space-6);max-width:1280px">
+    <div style="font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--color-accent-700)">Turn 3 — interior</div>
+    <div style="font-family:var(--font-heading);font-weight:800;font-size:40px;line-height:1.05">Inside the boat</div>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:64px;align-items:flex-start">
+    <div id="3a" data-screen-label="3a Cabin interior" style="display:flex;flex-direction:column;gap:var(--space-3);width:1284px">
+      <div style="display:flex;align-items:center;gap:var(--space-3)">
+        <span style="background:var(--color-accent);color:var(--color-bg);font-weight:800;font-size:16px;padding:4px 10px">3a</span>
+        <span style="font-weight:800;font-size:24px">Inside the Hypotenuse — cabin</span>
+        <span style="font-size:16px;color:var(--color-neutral-700);white-space:nowrap">Puzzle: route time = distance ÷ speed + locks.</span>
+      </div>
+      <div style="border:2px solid var(--color-text);display:flex;flex-direction:column;background:var(--color-bg)">
+        <div style="position:relative;width:1280px;height:576px;cursor:crosshair;overflow:hidden">
+          <canvas ref="{{ refF }}" width="640" height="288" style="display:block;width:1280px;height:576px;image-rendering:pixelated"></canvas>
+          <sc-for list="{{ hotsF }}" as="h" hint-placeholder-count="0">
+            <div onMouseEnter="{{ h.enter }}" onMouseLeave="{{ h.leave }}" style="position:absolute;left:{{ h.left }};top:{{ h.top }};width:{{ h.width }};height:{{ h.height }}">
+              <sc-if value="{{ showHotspots }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;outline:2px dashed var(--color-accent-300);outline-offset:-2px"></div></sc-if>
+            </div>
+          </sc-for>
+          <div style="position:absolute;left:620px;top:300px;width:460px;pointer-events:none;font-family:'Pixelify Sans',monospace;font-weight:600;font-size:30px;line-height:1.15;color:var(--color-accent-300);text-shadow:2px 0 var(--color-text),-2px 0 var(--color-text),0 2px var(--color-text),0 -2px var(--color-text),2px 2px var(--color-text),-2px -2px var(--color-text),2px -2px var(--color-text),-2px 2px var(--color-text);text-wrap:pretty">Speed limit’s 4 mph, and every lock costs us a quarter of an hour. Plot it out and we’ll know when supper is.</div>
+        </div>
+        <div style="border-top:2px solid var(--color-text);height:44px;display:flex;align-items:center;justify-content:center;gap:10px;padding:0 var(--space-4);background:var(--color-text);color:oklch(0.74 0.12 190);font-family:'Pixelify Sans',monospace;font-size:28px;font-weight:400;white-space:nowrap">
+          <span>{{ sentVerbF }}</span><span style="color:oklch(0.87 0.16 95)">{{ hoverF }}</span>
+        </div>
+        <div style="border-top:2px solid var(--color-text);display:grid;grid-template-columns:3fr 2fr;gap:2px;background:var(--color-text);height:178px;padding:6px 6px 8px">
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:2px">
+            <sc-for list="{{ verbsF }}" as="v" hint-placeholder-count="9">
+              <sc-if value="{{ v.on }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ v.pick }}" style="all:unset;cursor:pointer;background:var(--color-text);color:oklch(0.87 0.16 95);font-family:'Pixelify Sans',monospace;font-weight:600;font-size:30px;padding:0 var(--space-4);display:flex;align-items:center;white-space:nowrap">{{ v.label }}</button>
+              </sc-if>
+              <sc-if value="{{ v.off }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ v.pick }}" style="all:unset;cursor:pointer;background:var(--color-text);color:oklch(0.6 0.1 195);font-family:'Pixelify Sans',monospace;font-weight:400;font-size:30px;padding:0 var(--space-4);display:flex;align-items:center;white-space:nowrap" style-hover="color:oklch(0.85 0.1 190)">{{ v.label }}</button>
+              </sc-if>
+            </sc-for>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:2px">
+            <sc-for list="{{ invF }}" as="it" hint-placeholder-count="4">
+              <div onMouseEnter="{{ it.enter }}" onMouseLeave="{{ it.leave }}" style="background:oklch(0.3 0.03 260);display:flex;align-items:center;justify-content:flex-start;padding-left:var(--space-3);cursor:pointer" style-hover="background:oklch(0.38 0.05 260)">
+                <canvas ref="{{ it.ref }}" width="36" height="26" style="width:108px;height:78px;image-rendering:pixelated;display:block"></canvas>
+              </div>
+            </sc-for>
+            <div style="background:oklch(0.3 0.03 260)"></div><div style="background:oklch(0.3 0.03 260)"></div><div style="background:oklch(0.3 0.03 260)"></div><div style="background:oklch(0.3 0.03 260)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section data-screen-label="Turn 2" style="display:flex;flex-direction:column;gap:var(--space-8);padding:64px 64px 0">
+  <div style="display:flex;flex-direction:column;gap:var(--space-2);border-bottom:2px solid var(--color-text);padding-bottom:var(--space-6);max-width:1280px">
+    <div style="font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--color-accent-700)">Turn 2 — three more locations</div>
+    <div style="font-family:var(--font-heading);font-weight:800;font-size:40px;line-height:1.05">Cheshunt by night, Limehouse lock, Hackney Wick</div>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:64px;align-items:flex-start">
+    <div id="2a" data-screen-label="2a Cheshunt Lakes" style="display:flex;flex-direction:column;gap:var(--space-3);width:1284px">
+      <div style="display:flex;align-items:center;gap:var(--space-3)">
+        <span style="background:var(--color-accent);color:var(--color-bg);font-weight:800;font-size:16px;padding:4px 10px">2a</span>
+        <span style="font-weight:800;font-size:24px">Cheshunt Lakes — night</span>
+        <span style="font-size:16px;color:var(--color-neutral-700);white-space:nowrap">Puzzle: parabolic cable sag between pylons.</span>
+      </div>
+      <div style="border:2px solid var(--color-text);display:flex;flex-direction:column;background:var(--color-bg)">
+        <div style="position:relative;width:1280px;height:576px;cursor:crosshair;overflow:hidden">
+          <canvas ref="{{ refC }}" width="640" height="288" style="display:block;width:1280px;height:576px;image-rendering:pixelated"></canvas>
+          <sc-for list="{{ hotsC }}" as="h" hint-placeholder-count="0">
+            <div onMouseEnter="{{ h.enter }}" onMouseLeave="{{ h.leave }}" style="position:absolute;left:{{ h.left }};top:{{ h.top }};width:{{ h.width }};height:{{ h.height }}">
+              <sc-if value="{{ showHotspots }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;outline:2px dashed var(--color-accent-300);outline-offset:-2px"></div></sc-if>
+            </div>
+          </sc-for>
+          <div style="position:absolute;left:40px;top:28px;width:560px;pointer-events:none;font-family:'Pixelify Sans',monospace;font-weight:600;font-size:30px;line-height:1.15;color:var(--color-accent-300);text-shadow:2px 0 var(--color-text),-2px 0 var(--color-text),0 2px var(--color-text),0 -2px var(--color-text),2px 2px var(--color-text),-2px -2px var(--color-text),2px -2px var(--color-text),-2px 2px var(--color-text);text-wrap:pretty">Cable sags like y = x²/900 between pylons 300 m apart. How low does it hang in the middle?</div>
+        </div>
+        <div style="border-top:2px solid var(--color-text);height:44px;display:flex;align-items:center;justify-content:center;gap:10px;padding:0 var(--space-4);background:var(--color-text);color:oklch(0.74 0.12 190);font-family:'Pixelify Sans',monospace;font-size:28px;font-weight:400;white-space:nowrap">
+          <span>{{ sentVerbC }}</span><span style="color:oklch(0.87 0.16 95)">{{ hoverC }}</span>
+        </div>
+        <div style="border-top:2px solid var(--color-text);display:grid;grid-template-columns:3fr 2fr;gap:2px;background:var(--color-text);height:178px;padding:6px 6px 8px">
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:2px">
+            <sc-for list="{{ verbsC }}" as="v" hint-placeholder-count="9">
+              <sc-if value="{{ v.on }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ v.pick }}" style="all:unset;cursor:pointer;background:var(--color-text);color:oklch(0.87 0.16 95);font-family:'Pixelify Sans',monospace;font-weight:600;font-size:30px;padding:0 var(--space-4);display:flex;align-items:center;white-space:nowrap">{{ v.label }}</button>
+              </sc-if>
+              <sc-if value="{{ v.off }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ v.pick }}" style="all:unset;cursor:pointer;background:var(--color-text);color:oklch(0.6 0.1 195);font-family:'Pixelify Sans',monospace;font-weight:400;font-size:30px;padding:0 var(--space-4);display:flex;align-items:center;white-space:nowrap" style-hover="color:oklch(0.85 0.1 190)">{{ v.label }}</button>
+              </sc-if>
+            </sc-for>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:2px">
+            <sc-for list="{{ invC }}" as="it" hint-placeholder-count="4">
+              <div onMouseEnter="{{ it.enter }}" onMouseLeave="{{ it.leave }}" style="background:oklch(0.3 0.03 260);display:flex;align-items:center;justify-content:flex-start;padding-left:var(--space-3);cursor:pointer" style-hover="background:oklch(0.38 0.05 260)">
+                <canvas ref="{{ it.ref }}" width="36" height="26" style="width:108px;height:78px;image-rendering:pixelated;display:block"></canvas>
+              </div>
+            </sc-for>
+            <div style="background:oklch(0.3 0.03 260)"></div><div style="background:oklch(0.3 0.03 260)"></div><div style="background:oklch(0.3 0.03 260)"></div><div style="background:oklch(0.3 0.03 260)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+    <div id="2b" data-screen-label="2b Limehouse Lock" style="display:flex;flex-direction:column;gap:var(--space-3);width:1284px">
+      <div style="display:flex;align-items:center;gap:var(--space-3)">
+        <span style="background:var(--color-accent);color:var(--color-bg);font-weight:800;font-size:16px;padding:4px 10px">2b</span>
+        <span style="font-weight:800;font-size:24px">Limehouse Lock — grey morning</span>
+        <span style="font-size:16px;color:var(--color-neutral-700);white-space:nowrap">Puzzle: sine-wave tide window. Solve 4 + 3 sin t &gt; 5.</span>
+      </div>
+      <div style="border:2px solid var(--color-text);display:flex;flex-direction:column;background:var(--color-bg)">
+        <div style="position:relative;width:1280px;height:576px;cursor:crosshair;overflow:hidden">
+          <canvas ref="{{ refD }}" width="640" height="288" style="display:block;width:1280px;height:576px;image-rendering:pixelated"></canvas>
+          <sc-for list="{{ hotsD }}" as="h" hint-placeholder-count="0">
+            <div onMouseEnter="{{ h.enter }}" onMouseLeave="{{ h.leave }}" style="position:absolute;left:{{ h.left }};top:{{ h.top }};width:{{ h.width }};height:{{ h.height }}">
+              <sc-if value="{{ showHotspots }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;outline:2px dashed var(--color-accent-300);outline-offset:-2px"></div></sc-if>
+            </div>
+          </sc-for>
+          <div style="position:absolute;left:40px;top:28px;width:560px;pointer-events:none;font-family:'Pixelify Sans',monospace;font-weight:600;font-size:30px;line-height:1.15;color:var(--color-bg);text-shadow:2px 0 var(--color-text),-2px 0 var(--color-text),0 2px var(--color-text),0 -2px var(--color-text),2px 2px var(--color-text),-2px -2px var(--color-text),2px -2px var(--color-text),-2px 2px var(--color-text);text-wrap:pretty">Tide follows h = 4 + 3 sin t. Gates open when h &gt; 5. When’s our window out onto the Thames?</div>
+        </div>
+        <div style="border-top:2px solid var(--color-text);height:44px;display:flex;align-items:center;justify-content:center;gap:10px;padding:0 var(--space-4);background:var(--color-text);color:oklch(0.74 0.12 190);font-family:'Pixelify Sans',monospace;font-size:28px;font-weight:400;white-space:nowrap">
+          <span>{{ sentVerbD }}</span><span style="color:oklch(0.87 0.16 95)">{{ hoverD }}</span>
+        </div>
+        <div style="border-top:2px solid var(--color-text);display:grid;grid-template-columns:3fr 2fr;gap:2px;background:var(--color-text);height:178px;padding:6px 6px 8px">
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:2px">
+            <sc-for list="{{ verbsD }}" as="v" hint-placeholder-count="9">
+              <sc-if value="{{ v.on }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ v.pick }}" style="all:unset;cursor:pointer;background:var(--color-text);color:oklch(0.87 0.16 95);font-family:'Pixelify Sans',monospace;font-weight:600;font-size:30px;padding:0 var(--space-4);display:flex;align-items:center;white-space:nowrap">{{ v.label }}</button>
+              </sc-if>
+              <sc-if value="{{ v.off }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ v.pick }}" style="all:unset;cursor:pointer;background:var(--color-text);color:oklch(0.6 0.1 195);font-family:'Pixelify Sans',monospace;font-weight:400;font-size:30px;padding:0 var(--space-4);display:flex;align-items:center;white-space:nowrap" style-hover="color:oklch(0.85 0.1 190)">{{ v.label }}</button>
+              </sc-if>
+            </sc-for>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:2px">
+            <sc-for list="{{ invD }}" as="it" hint-placeholder-count="4">
+              <div onMouseEnter="{{ it.enter }}" onMouseLeave="{{ it.leave }}" style="background:oklch(0.3 0.03 260);display:flex;align-items:center;justify-content:flex-start;padding-left:var(--space-3);cursor:pointer" style-hover="background:oklch(0.38 0.05 260)">
+                <canvas ref="{{ it.ref }}" width="36" height="26" style="width:108px;height:78px;image-rendering:pixelated;display:block"></canvas>
+              </div>
+            </sc-for>
+            <div style="background:oklch(0.3 0.03 260)"></div><div style="background:oklch(0.3 0.03 260)"></div><div style="background:oklch(0.3 0.03 260)"></div><div style="background:oklch(0.3 0.03 260)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+    <div id="2c" data-screen-label="2c Hackney Wick" style="display:flex;flex-direction:column;gap:var(--space-3);width:1284px">
+      <div style="display:flex;align-items:center;gap:var(--space-3)">
+        <span style="background:var(--color-accent);color:var(--color-bg);font-weight:800;font-size:16px;padding:4px 10px">2c</span>
+        <span style="font-weight:800;font-size:24px">Hackney Wick — summer afternoon</span>
+        <span style="font-size:16px;color:var(--color-neutral-700);white-space:nowrap">Puzzle: graffiti quadratic → mooring number.</span>
+      </div>
+      <div style="border:2px solid var(--color-text);display:flex;flex-direction:column;background:var(--color-bg)">
+        <div style="position:relative;width:1280px;height:576px;cursor:crosshair;overflow:hidden">
+          <canvas ref="{{ refE }}" width="640" height="288" style="display:block;width:1280px;height:576px;image-rendering:pixelated"></canvas>
+          <sc-for list="{{ hotsE }}" as="h" hint-placeholder-count="0">
+            <div onMouseEnter="{{ h.enter }}" onMouseLeave="{{ h.leave }}" style="position:absolute;left:{{ h.left }};top:{{ h.top }};width:{{ h.width }};height:{{ h.height }}">
+              <sc-if value="{{ showHotspots }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;outline:2px dashed var(--color-accent-300);outline-offset:-2px"></div></sc-if>
+            </div>
+          </sc-for>
+          <div style="position:absolute;left:40px;top:28px;width:560px;pointer-events:none;font-family:'Pixelify Sans',monospace;font-weight:600;font-size:30px;line-height:1.15;color:var(--color-bg);text-shadow:2px 0 var(--color-text),-2px 0 var(--color-text),0 2px var(--color-text),0 -2px var(--color-text),2px 2px var(--color-text),-2px -2px var(--color-text),2px -2px var(--color-text),-2px 2px var(--color-text);text-wrap:pretty">Someone’s sprayed x² = 5x − 6 on the wall. Two answers… and two mooring posts. Coincidence?</div>
+        </div>
+        <div style="border-top:2px solid var(--color-text);height:44px;display:flex;align-items:center;justify-content:center;gap:10px;padding:0 var(--space-4);background:var(--color-text);color:oklch(0.74 0.12 190);font-family:'Pixelify Sans',monospace;font-size:28px;font-weight:400;white-space:nowrap">
+          <span>{{ sentVerbE }}</span><span style="color:oklch(0.87 0.16 95)">{{ hoverE }}</span>
+        </div>
+        <div style="border-top:2px solid var(--color-text);display:grid;grid-template-columns:3fr 2fr;gap:2px;background:var(--color-text);height:178px;padding:6px 6px 8px">
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:2px">
+            <sc-for list="{{ verbsE }}" as="v" hint-placeholder-count="9">
+              <sc-if value="{{ v.on }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ v.pick }}" style="all:unset;cursor:pointer;background:var(--color-text);color:oklch(0.87 0.16 95);font-family:'Pixelify Sans',monospace;font-weight:600;font-size:30px;padding:0 var(--space-4);display:flex;align-items:center;white-space:nowrap">{{ v.label }}</button>
+              </sc-if>
+              <sc-if value="{{ v.off }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ v.pick }}" style="all:unset;cursor:pointer;background:var(--color-text);color:oklch(0.6 0.1 195);font-family:'Pixelify Sans',monospace;font-weight:400;font-size:30px;padding:0 var(--space-4);display:flex;align-items:center;white-space:nowrap" style-hover="color:oklch(0.85 0.1 190)">{{ v.label }}</button>
+              </sc-if>
+            </sc-for>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:2px">
+            <sc-for list="{{ invE }}" as="it" hint-placeholder-count="4">
+              <div onMouseEnter="{{ it.enter }}" onMouseLeave="{{ it.leave }}" style="background:oklch(0.3 0.03 260);display:flex;align-items:center;justify-content:flex-start;padding-left:var(--space-3);cursor:pointer" style-hover="background:oklch(0.38 0.05 260)">
+                <canvas ref="{{ it.ref }}" width="36" height="26" style="width:108px;height:78px;image-rendering:pixelated;display:block"></canvas>
+              </div>
+            </sc-for>
+            <div style="background:oklch(0.3 0.03 260)"></div><div style="background:oklch(0.3 0.03 260)"></div><div style="background:oklch(0.3 0.03 260)"></div><div style="background:oklch(0.3 0.03 260)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+  </div>
+</section>
+<section data-screen-label="Turn 1" style="display:flex;flex-direction:column;gap:var(--space-8);padding:64px">
+  <div style="display:flex;flex-direction:column;gap:var(--space-2);border-bottom:2px solid var(--color-text);padding-bottom:var(--space-6);max-width:1280px">
+    <div style="font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--color-accent-700)">Turn 1 — two scene options</div>
+    <div style="font-family:var(--font-heading);font-weight:800;font-size:56px;line-height:1">The Regent's Canal Problem</div>
+    <div style="font-size:18px;max-width:760px;text-wrap:pretty">640×400 pixel art for a teen algebra &amp; geometry adventure aboard a London narrowboat. Every pixel comes from the Modernist ramps — ink, neutrals and red brick. Hover the scenes to drive the sentence line; click a verb.</div>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:64px;align-items:flex-start">
+
+    <div id="1a" data-screen-label="1a Camden Lock" style="display:flex;flex-direction:column;gap:var(--space-3);width:1284px">
+      <div style="display:flex;align-items:center;gap:var(--space-3)">
+        <span style="background:var(--color-accent);color:var(--color-bg);font-weight:800;font-size:16px;padding:4px 10px">1a</span>
+        <span style="font-weight:800;font-size:24px">Camden Lock — day</span>
+        <span style="font-size:16px;color:var(--color-neutral-700);white-space:nowrap">Puzzle: rate × time = rise. Solve for t.</span>
+      </div>
+      <div style="border:2px solid var(--color-text);display:flex;flex-direction:column;background:var(--color-bg)">
+        <div style="position:relative;width:1280px;height:576px;cursor:crosshair;overflow:hidden">
+          <canvas ref="{{ refA }}" width="640" height="288" style="display:block;width:1280px;height:576px;image-rendering:pixelated"></canvas>
+          <sc-for list="{{ hotsA }}" as="h" hint-placeholder-count="0">
+            <div onMouseEnter="{{ h.enter }}" onMouseLeave="{{ h.leave }}" style="position:absolute;left:{{ h.left }};top:{{ h.top }};width:{{ h.width }};height:{{ h.height }}">
+              <sc-if value="{{ showHotspots }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;outline:2px dashed var(--color-accent-300);outline-offset:-2px"></div></sc-if>
+            </div>
+          </sc-for>
+          <div style="position:absolute;left:420px;top:28px;width:440px;pointer-events:none;font-family:'Pixelify Sans',monospace;font-weight:600;font-size:30px;line-height:1.15;color:var(--color-accent-300);text-shadow:2px 0 var(--color-text),-2px 0 var(--color-text),0 2px var(--color-text),0 -2px var(--color-text),2px 2px var(--color-text),-2px -2px var(--color-text),2px -2px var(--color-text),-2px 2px var(--color-text);text-wrap:pretty">Rise is 2.4 metres. She fills at 0.3 a minute. So how long till we're through, smart one?</div>
+        </div>
+        <div style="border-top:2px solid var(--color-text);height:44px;display:flex;align-items:center;justify-content:center;gap:10px;padding:0 var(--space-4);background:var(--color-text);color:oklch(0.74 0.12 190);font-family:'Pixelify Sans',monospace;font-size:28px;font-weight:400;white-space:nowrap">
+          <span>{{ sentVerbA }}</span><span style="color:oklch(0.87 0.16 95)">{{ hoverA }}</span>
+        </div>
+        <div style="border-top:2px solid var(--color-text);display:grid;grid-template-columns:3fr 2fr;gap:2px;background:var(--color-text);height:178px;padding:6px 6px 8px">
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:2px">
+            <sc-for list="{{ verbsA }}" as="v" hint-placeholder-count="9">
+              <sc-if value="{{ v.on }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ v.pick }}" style="all:unset;cursor:pointer;background:var(--color-text);color:oklch(0.87 0.16 95);font-family:'Pixelify Sans',monospace;font-weight:600;font-size:30px;padding:0 var(--space-4);display:flex;align-items:center;white-space:nowrap">{{ v.label }}</button>
+              </sc-if>
+              <sc-if value="{{ v.off }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ v.pick }}" style="all:unset;cursor:pointer;background:var(--color-text);color:oklch(0.6 0.1 195);font-family:'Pixelify Sans',monospace;font-weight:400;font-size:30px;padding:0 var(--space-4);display:flex;align-items:center;white-space:nowrap" style-hover="color:oklch(0.85 0.1 190)">{{ v.label }}</button>
+              </sc-if>
+            </sc-for>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:2px">
+            <sc-for list="{{ invA }}" as="it" hint-placeholder-count="4">
+              <div onMouseEnter="{{ it.enter }}" onMouseLeave="{{ it.leave }}" style="background:oklch(0.3 0.03 260);display:flex;align-items:center;justify-content:flex-start;padding-left:var(--space-3);cursor:pointer" style-hover="background:oklch(0.38 0.05 260)">
+                <canvas ref="{{ it.ref }}" width="36" height="26" style="width:108px;height:78px;image-rendering:pixelated;display:block"></canvas>
+              </div>
+            </sc-for>
+            <div style="background:oklch(0.3 0.03 260)"></div><div style="background:oklch(0.3 0.03 260)"></div><div style="background:oklch(0.3 0.03 260)"></div><div style="background:oklch(0.3 0.03 260)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="1b" data-screen-label="1b Islington Tunnel" style="display:flex;flex-direction:column;gap:var(--space-3);width:1284px">
+      <div style="display:flex;align-items:center;gap:var(--space-3)">
+        <span style="background:var(--color-accent);color:var(--color-bg);font-weight:800;font-size:16px;padding:4px 10px">1b</span>
+        <span style="font-weight:800;font-size:24px">Islington Tunnel — dusk</span>
+        <span style="font-size:16px;color:var(--color-neutral-700);white-space:nowrap">Puzzle: semicircular arch, cabin headroom. Find r.</span>
+      </div>
+      <div style="border:2px solid var(--color-text);display:flex;flex-direction:column;background:var(--color-bg)">
+        <div style="position:relative;width:1280px;height:576px;cursor:crosshair;overflow:hidden">
+          <canvas ref="{{ refB }}" width="640" height="288" style="display:block;width:1280px;height:576px;image-rendering:pixelated"></canvas>
+          <sc-for list="{{ hotsB }}" as="h" hint-placeholder-count="0">
+            <div onMouseEnter="{{ h.enter }}" onMouseLeave="{{ h.leave }}" style="position:absolute;left:{{ h.left }};top:{{ h.top }};width:{{ h.width }};height:{{ h.height }}">
+              <sc-if value="{{ showHotspots }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;outline:2px dashed var(--color-accent-300);outline-offset:-2px"></div></sc-if>
+            </div>
+          </sc-for>
+          <div style="position:absolute;left:560px;top:290px;width:420px;pointer-events:none;font-family:'Pixelify Sans',monospace;font-weight:600;font-size:30px;line-height:1.15;color:var(--color-bg);text-shadow:2px 0 var(--color-text),-2px 0 var(--color-text),0 2px var(--color-text),0 -2px var(--color-text),2px 2px var(--color-text),-2px -2px var(--color-text),2px -2px var(--color-text),-2px 2px var(--color-text);text-wrap:pretty">If the arch is a semicircle and our cabin's 2.1 m tall… do we fit, or do we lose the chimney?</div>
+        </div>
+        <div style="border-top:2px solid var(--color-text);height:44px;display:flex;align-items:center;justify-content:center;gap:10px;padding:0 var(--space-4);background:var(--color-text);color:oklch(0.74 0.12 190);font-family:'Pixelify Sans',monospace;font-size:28px;font-weight:400;white-space:nowrap">
+          <span>{{ sentVerbB }}</span><span style="color:oklch(0.87 0.16 95)">{{ hoverB }}</span>
+        </div>
+        <div style="border-top:2px solid var(--color-text);display:grid;grid-template-columns:3fr 2fr;gap:2px;background:var(--color-text);height:178px;padding:6px 6px 8px">
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:2px">
+            <sc-for list="{{ verbsB }}" as="v" hint-placeholder-count="9">
+              <sc-if value="{{ v.on }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ v.pick }}" style="all:unset;cursor:pointer;background:var(--color-text);color:oklch(0.87 0.16 95);font-family:'Pixelify Sans',monospace;font-weight:600;font-size:30px;padding:0 var(--space-4);display:flex;align-items:center;white-space:nowrap">{{ v.label }}</button>
+              </sc-if>
+              <sc-if value="{{ v.off }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ v.pick }}" style="all:unset;cursor:pointer;background:var(--color-text);color:oklch(0.6 0.1 195);font-family:'Pixelify Sans',monospace;font-weight:400;font-size:30px;padding:0 var(--space-4);display:flex;align-items:center;white-space:nowrap" style-hover="color:oklch(0.85 0.1 190)">{{ v.label }}</button>
+              </sc-if>
+            </sc-for>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:2px">
+            <sc-for list="{{ invB }}" as="it" hint-placeholder-count="4">
+              <div onMouseEnter="{{ it.enter }}" onMouseLeave="{{ it.leave }}" style="background:oklch(0.3 0.03 260);display:flex;align-items:center;justify-content:flex-start;padding-left:var(--space-3);cursor:pointer" style-hover="background:oklch(0.38 0.05 260)">
+                <canvas ref="{{ it.ref }}" width="36" height="26" style="width:108px;height:78px;image-rendering:pixelated;display:block"></canvas>
+              </div>
+            </sc-for>
+            <div style="background:oklch(0.3 0.03 260)"></div><div style="background:oklch(0.3 0.03 260)"></div><div style="background:oklch(0.3 0.03 260)"></div><div style="background:oklch(0.3 0.03 260)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;dither&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Pixel art&quot;},&quot;showHotspots&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Debug&quot;}}">
+class Component extends DCLogic {
+  state = { verb: {}, hover: {} };
+  canv = {}; icons = {}; tries = 0;
+  KEYS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+  SCENES = { a: 'camden', b: 'kingscross', c: 'cheshunt', d: 'limehouse', e: 'hackneywick', f: 'cabin', g: 'littlevenice', h: 'stonebridge' };
+  VERBS = ['Give', 'Open', 'Close', 'Pick up', 'Look at', 'Talk to', 'Use', 'Push', 'Pull'];
+  HOTS = {
+    a: [['Camden Lock warehouse', 446, 16, 194, 60], ['roving bridge', 196, 104, 248, 46], ['narrowboat Hypotenuse', 196, 148, 280, 86], ['balance beam', 60, 212, 130, 56], ['chalkboard', 290, 236, 76, 42], ['bollard', 406, 248, 18, 26], ['Barnaby', 600, 176, 32, 108]],
+    b: [['gasholders', 320, 54, 300, 106], ['Islington Tunnel', 58, 106, 108, 110], ['plaque', 84, 70, 88, 26], ['chalk mark', 206, 116, 42, 20], ['narrowboat Sohcahtoa', 150, 166, 272, 86], ['lamp post', 292, 130, 20, 146], ['Barnaby', 536, 178, 32, 108]],
+    c: [['moon', 454, 30, 32, 32], ['electricity pylon', 130, 34, 40, 118], ['electricity pylon', 380, 34, 40, 118], ['swans', 508, 192, 56, 30], ['narrowboat Hypotenuse', 70, 172, 260, 82], ['reeds', 318, 204, 36, 54], ['fingerpost', 404, 214, 56, 52], ['Barnaby', 562, 176, 32, 108]],
+    d: [['Canary Wharf', 388, 24, 214, 116], ['lock gates', 190, 138, 260, 88], ['tide gauge', 146, 154, 18, 68], ['channel buoy', 310, 162, 14, 18], ['narrowboat Hypotenuse', 0, 176, 212, 82], ['capstan', 420, 258, 28, 24], ['tide board', 554, 210, 88, 40]],
+    g: [['white stucco villas', 0, 40, 176, 112], ['café boat', 14, 120, 176, 54], ['weeping willow', 246, 64, 116, 112], ['blue iron bridge', 368, 126, 118, 60], ['narrowboat Hypotenuse', 150, 172, 268, 82], ['fingerpost', 26, 210, 64, 42], ['street lamp', 12, 142, 20, 136], ['information board', 524, 208, 100, 76], ['Barnaby', 430, 176, 32, 108]],
+    h: [['gantry crane', 140, 60, 256, 170], ['narrowboat Tangent', 150, 150, 214, 80], ['half-blacked hull', 168, 186, 192, 30], ['workshop', 420, 108, 132, 120], ['Stonebridge Lock', 0, 132, 200, 70], ['paint tins', 198, 232, 200, 20], ['propeller', 116, 232, 32, 32], ['chalkboard', 18, 230, 80, 56], ['oil drums', 564, 194, 72, 34], ['Barnaby', 528, 176, 32, 108]],
+    f: [['wood-burning stove', 40, 120, 60, 86], ['kettle', 70, 118, 26, 22], ['bookshelf', 146, 66, 120, 56], ['ribbon plates', 284, 42, 28, 80], ['oil lamp', 304, 32, 18, 34], ['route whiteboard', 420, 44, 128, 96], ['Buckby can', 554, 104, 34, 38], ['hanging pans', 518, 28, 70, 46], ['sleeping cat', 154, 164, 38, 18], ['canal map', 272, 184, 96, 14], ['mug of tea', 368, 184, 18, 14], ['rag rug', 200, 248, 240, 38], ['Barnaby', 484, 176, 32, 108]],
+    e: [['London Stadium', 330, 72, 270, 72], ['the Orbit', 282, 22, 40, 120], ['WICK piece', 26, 158, 74, 32], ['graffiti equation', 380, 164, 142, 34], ['canalside bar', 556, 152, 84, 74], ['mural', 206, 166, 160, 60], ['moored boat', 440, 184, 168, 62], ['narrowboat Sohcahtoa', 24, 170, 284, 84], ['planters', 248, 248, 250, 34], ['mooring post 2', 324, 246, 14, 28], ['mooring post 3', 606, 246, 14, 28]]
+  };
+  ITEMS = [['windlass', 'windlass'], ['protractor', 'protractor'], ['notebook', 'graph-paper notebook'], ['rope', 'mooring rope']];
+  cref = {}; iref = {};
+  canvasRef(k) { return this.cref[k] || (this.cref[k] = el => { this.canv[k] = el; }); }
+  iconRef(s, id) { const k = s + ':' + id; return this.iref[k] || (this.iref[k] = el => { this.icons[k] = el; if (el && window.CipherArt) window.CipherArt.draw(el, id, this.opt()); }); }
+  opt() { return { dither: this.props.dither ?? true }; }
+  componentDidMount() { this.paint(); }
+  componentDidUpdate(p) { if (p.dither !== this.props.dither) this.paint(); }
+  paint = () => {
+    const A = window.CipherArt;
+    if (!A || !this.canv.a || !A.draw(this.canv.a, 'camden', this.opt())) { if (this.tries++ < 100) setTimeout(this.paint, 100); return; }
+    this.KEYS.forEach(k => this.canv[k] && A.draw(this.canv[k], this.SCENES[k], this.opt()));
+    Object.entries(this.icons).forEach(([k, el]) => el && A.draw(el, k.split(':')[1], this.opt()));
+  };
+  setHover(s, v) { this.setState(st => ({ hover: { ...st.hover, [s]: v } })); }
+  renderVals() {
+    const out = { showHotspots: !!this.props.showHotspots };
+    this.KEYS.forEach(s => {
+      const K = s.toUpperCase(), cur = this.state.verb[s];
+      out['ref' + K] = this.canvasRef(s);
+      out['verbs' + K] = this.VERBS.map(l => ({ label: l, on: cur === l, off: cur !== l, pick: () => this.setState(st => ({ verb: { ...st.verb, [s]: st.verb[s] === l ? null : l } })) }));
+      out['hots' + K] = this.HOTS[s].map(([name, x, y, w, h]) => ({ name, left: x / 6.4 + '%', top: y / 2.88 + '%', width: w / 6.4 + '%', height: h / 2.88 + '%', enter: () => this.setHover(s, name), leave: () => this.setHover(s, '') }));
+      out['inv' + K] = this.ITEMS.map(([id, name]) => ({ id, ref: this.iconRef(s, id), enter: () => this.setHover(s, name), leave: () => this.setHover(s, '') }));
+      out['sentVerb' + K] = cur || 'Walk to';
+      out['hover' + K] = this.state.hover[s] || '';
+    });
+    return out;
+  }
+}
+</script>
+</body>
+</html>
