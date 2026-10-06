@@ -1,6 +1,9 @@
 // Character sprites. Coordinates are in sprite units; the kit draws them at 2×.
 // `x` is the sprite's left edge, `b` its baseline (feet).
 import type { Kit } from './kit';
+import { sheetSprite } from './images';
+import rozPlay from './img/roz-play.png';
+import rozTalk from './img/roz-talk.png';
 
 export interface Pose { walk?: number; talk?: boolean; t?: number; phone?: boolean; ph?: number }
 
@@ -66,9 +69,11 @@ export const boater: SpriteFn = (g, x, b, p) => {
   for (let k = 0; k < 3; k++) { const q = (t * 0.45 + k / 3) % 1, yy = u - 42 - q * 16, xx = x - 4 + Math.round(Math.sin(t * 1.5 + k * 2) * 1.5 - q * 3); R(xx, yy, q < .35 ? 1 : 2, q < .35 ? 1 : 2, q < .5 ? 'n200' : 'n300'); }
 };
 
-// Roz, the Camden busker: grey curls, purple coat, long skirt, guitar. She sways,
-// strums and sings, and the notes drift up off the strings.
-export const busker: SpriteFn = (g, x, b, p) => {
+// Roz, the Camden busker: grey curls, granny glasses, purple coat, tiered skirt and
+// guitar. She's a hand-placed pixel-art sprite sheet (art-src/roz.py); this code-drawn
+// version stands in while the images load.
+export const busker: SpriteFn = (g, x, b, p) => busker1x(g, x, b, p);
+const buskerCode: SpriteFn = (g, x, b, p) => {
   const { R, px, E } = g;
   const t = secs(p), br = Math.sin(t * 2) > .5 ? 1 : 0, blink = (t % 4.1) < .14, strum = Math.floor(t * 7) % 2, nod = Math.sin(t * 3.2) > .7 ? 1 : 0;
   const sing = !p.talk && Math.floor(t * 2.3) % 3 !== 0, u = b - br, h = u + nod;
@@ -189,3 +194,10 @@ export const swan: SpriteFn = (g, x, b, p) => {
   px(x + 18, b - 28 + n, 'ink'); R(x + 20, b - 28 + n, 1, 3, 'ink');
   if (hiss) R(x + 22, b - 25 + n, 2, 1, 'a700');
 };
+
+const busker1x = sheetSprite({
+  w: 72, h: 120, cx: 24,
+  anims: { play: { src: rozPlay, frames: 24, fps: 8 }, talk: { src: rozTalk, frames: 8, fps: 8 } },
+  pick: p => p.talk ? 'talk' : 'play',
+  fallback: buskerCode,
+});

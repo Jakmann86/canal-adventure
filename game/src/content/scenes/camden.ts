@@ -69,7 +69,7 @@ export const camden: SceneDef = {
   vis: s => ({ boat: s.boatAt === 'camden', lockDown: !!s.f.lockDown, packLent: s.inv.includes('powerpack'), painted: !!s.f.painted }),
   voices: { gerald: [506, 70] },
   entry: from => from === 'islington' ? [540, true] : from === 'cabin' || from === null ? [470, true] : [20, false],
-  actors: () => [{ id: 'roz', sprite: busker, x: 576, b: 284, flip: true, h: 52 }],
+  actors: () => [{ id: 'roz', sprite: busker, x: 576, b: 284, flip: true, h: 58 }],
   enter: async s => {
     if (!s.is('metRoz')) {
       s.set('metRoz');
@@ -97,7 +97,7 @@ export const camden: SceneDef = {
     { id: 'beamR', name: 'balance beam', rect: [460, 212, 90, 50], look: 'The other balance beam, painted black and white like a humbug.', verbs: { Push: 'It won’t move while the lock’s full.' } },
     { id: 'board', name: 'lock board', rect: [290, 236, 76, 42], look: async sc => { await sc.me('CAMDEN LOCK. DROP 2.4 M. CILL 1.2 M.', 'The cill is the stone ledge under the top gate. Drain too far with the stern over it and… crunch.'); sc.note('lockboard'); } },
     { id: 'bollard', name: 'bollard', rect: [406, 248, 18, 26], look: 'A cast-iron bollard, polished by two hundred years of rope.' },
-    { id: 'roz', name: 'Roz', rect: [560, 224, 32, 60], walkTo: 540, look: 'A busker with a guitar, magnificent grey hair and a petition on a clipboard.',
+    { id: 'roz', name: 'Roz', rect: [556, 172, 40, 112], walkTo: 540, look: 'A busker with a guitar, magnificent grey hair and a petition on a clipboard.',
       verbs: { 'Talk to': roz }, give: { powerpack: async sc => { if (!sc.is('charged')) return sc.me('I still need it to charge the boat.'); await sc.say('roz', 'Bring it with the boat, love, I’ll be at the lock.'); } } },
     { id: 'amp', name: 'amp', rect: [596, 250, 42, 34], walkTo: 546, look: 'Roz’s amp. The power pack clips onto the side.', verbs: { 'Pick up': 'Roz would pick ME up and put me in the canal.' } },
     { id: 'hat', name: 'tips hat', rect: [554, 276, 24, 10], walkTo: 540, look: 'Roz’s tips hat. Two pound coins and a button.', verbs: { 'Pick up': 'Stealing from a busker? Not today, not ever.' } },
