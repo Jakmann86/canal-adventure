@@ -121,7 +121,7 @@ export const hackneywick: SceneDef = {
     { id: 'tap', name: 'water tap', rect: [396, 242, 22, 36], walkTo: 410, look: 'A water point. The only tap on this stretch of the cut.', verbs: { Use: fillTank, Open: fillTank }, use: { metronome: timeBucket } },
     { id: 'bucket', name: 'bucket', rect: [376, 260, 20, 20], walkTo: 400, look: 'A ten-litre bucket, for filling boat tanks the slow way.', verbs: { Use: 'I could time how long the tap takes to fill it. I need something that keeps time.', 'Pick up': 'I’ll leave it by the tap.' }, use: { metronome: timeBucket } },
     { id: 'planters', name: 'planters', rect: [248, 248, 30, 34], look: 'Planters full of wildflowers, all labelled “rewilded”.' },
-    ...when(!s.f.jasperGone, { id: 'jasper', name: 'Jasper', rect: [494, 226, 32, 58], walkTo: 476, look: 'A man in a beanie and an apron, with a beard you could lose a schooner in.', verbs: { 'Talk to': jasper } }),
+    ...when(!s.f.jasperGone, { id: 'jasper', name: 'Jasper', rect: [494, 226, 32, 58], walkTo: 440, look: 'A man with a quiff, a flowery shirt and a beard you could lose a schooner in, vaping over his flat white.', verbs: { 'Talk to': jasper } }),
     exit('toLea', 'the River Lea towpath', [284, 232, 42, 46], 'stonebridge', 'North up the River Lea towpath, past the marshes, to Stonebridge Lock.', 300),
     exit('toIslington', 'the towpath to Islington', [0, 200, 10, 88], 'islington', 'West along the cut to Islington.', 10),
     exit('toLimehouse', 'the Limehouse Cut', [630, 200, 10, 88], 'limehouse', 'South down the Limehouse Cut to Limehouse Lock.', 630),
