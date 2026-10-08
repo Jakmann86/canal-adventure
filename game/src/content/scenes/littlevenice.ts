@@ -28,7 +28,7 @@ export const littlevenice: SceneDef = {
   walk: () => [20, 616],
   vis: s => ({ boat: s.boatAt === 'littlevenice', painted: !!s.f.painted }),
   entry: from => from === 'cabin' ? [280, false] : from === 'camden' ? [610, true] : [106, false],
-  actors: () => [{ id: 'barnaby', sprite: boater, x: 478, b: 276, flip: true, h: 50 }],
+  actors: () => [{ id: 'barnaby', sprite: boater, x: 478, b: 276, h: 42 }],
   fg: g => { g.R(440, 262, 76, 4, 'wood'); g.R(440, 266, 76, 2, 'wood9'); g.R(446, 268, 3, 14, 'wood9'); g.R(507, 268, 3, 14, 'wood9'); },
   hotspots: s => [
     { id: 'villas', name: 'white stucco villas', rect: [0, 40, 176, 112], walkTo: null, look: 'White stucco villas. Each one costs more than the whole canal.' },
@@ -43,7 +43,7 @@ export const littlevenice: SceneDef = {
     { id: 'lamp', name: 'street lamp', rect: [12, 142, 20, 136], look: 'A Victorian street lamp, lit in broad daylight. Very Little Venice.' },
     { id: 'board', name: 'route board', rect: [524, 208, 100, 76], look: 'A route board for the Regent’s Canal: Camden, Angel, all the way down to Limehouse and the Thames. Thirteen kilometres.' },
     { id: 'bench', name: 'bench', rect: [440, 244, 78, 38], walkTo: 420, look: 'Barnaby’s bench. There’s a little plaque: “For Dot, who always knew the time of the tide.”' },
-    { id: 'barnaby', name: 'Barnaby', rect: [462, 222, 34, 56], walkTo: 440, look: 'An old boater on a bench, in a cap that has seen things.', verbs: { 'Talk to': barnaby }, give: { crusts: 'He waves them away. “They’re yours now. Swans only eat posh bread anyway.”' } },
+    { id: 'barnaby', name: 'Barnaby', rect: [458, 194, 40, 82], walkTo: 440, look: 'An old boater on a bench, in a cap that has seen things.', verbs: { 'Talk to': barnaby }, give: { crusts: 'He waves them away. “They’re yours now. Swans only eat posh bread anyway.”' } },
     exit('toCamden', 'the towpath to Camden', [626, 190, 14, 98], 'camden', 'Along the towpath, past London Zoo, to Camden Lock.', 616),
   ],
 };

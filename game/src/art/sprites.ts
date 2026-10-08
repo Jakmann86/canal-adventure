@@ -2,6 +2,11 @@
 // `x` is the sprite's left edge, `b` its baseline (feet).
 import type { Kit } from './kit';
 import { sheetSprite } from './images';
+import heroIdle from './img/hero-idle.png';
+import heroWalk from './img/hero-walk.png';
+import heroTalk from './img/hero-talk.png';
+import barnabyIdle from './img/barnaby-idle.png';
+import barnabyTalk from './img/barnaby-talk.png';
 import rozPlay from './img/roz-play.png';
 import rozListen from './img/roz-listen.png';
 import rozTalk from './img/roz-talk.png';
@@ -18,7 +23,7 @@ const flap = (p: Pose) => !!p.talk && Math.floor(secs(p) * 8) % 2 === 0;
 
 // The teenage hero: satchel, rolled-up jeans, trainers. Walk frames lift alternate legs;
 // standing still they breathe, blink, tap a foot and glance over their shoulder.
-export const teen: SpriteFn = (g, x, b, p) => {
+const teenCode: SpriteFn = (g, x, b, p) => {
   const { R, px } = g;
   const t = secs(p), f = p.walk ?? 0, l = f === 1 ? 1 : 0, r = f === 2 ? 1 : 0, sx = f === 1 ? -1 : f === 2 ? 1 : 0, sw = f ? 1 : 0;
   const idle = !f && !p.talk, ph = t % 9, br = !f && Math.sin(t * 2.2) > 0.5 ? 1 : 0, blink = (t % 3.7) < 0.14;
@@ -52,7 +57,7 @@ export const teen: SpriteFn = (g, x, b, p) => {
 };
 
 // Barnaby, the old boater on the bench at Little Venice, puffing on his pipe.
-export const boater: SpriteFn = (g, x, b, p) => {
+const boaterCode: SpriteFn = (g, x, b, p) => {
   const { R, px } = g;
   const t = secs(p), br = Math.sin(t * 1.6) > 0.5 ? 1 : 0, blink = (t % 4.9) < 0.15, u = b - br;
   R(x + 1, b - 2, 5, 2, 'ink'); R(x + 8, b - 2, 5, 2, 'ink');
@@ -74,7 +79,6 @@ export const boater: SpriteFn = (g, x, b, p) => {
 // Roz, the Camden busker: grey curls, granny glasses, purple coat, tiered skirt and
 // guitar. She's a pixel-art sprite sheet (art-src/roz.py); this code-drawn version
 // stands in while the images load.
-export const busker: SpriteFn = (g, x, b, p) => rozSheets(g, x, b, p);
 const buskerCode: SpriteFn = (g, x, b, p) => {
   const { R, px, E } = g;
   const t = secs(p), br = Math.sin(t * 2) > .5 ? 1 : 0, blink = (t % 4.1) < .14, strum = Math.floor(t * 7) % 2, nod = Math.sin(t * 3.2) > .7 ? 1 : 0;
@@ -197,9 +201,29 @@ export const swan: SpriteFn = (g, x, b, p) => {
   if (hiss) R(x + 22, b - 25 + n, 2, 1, 'a700');
 };
 
-// Side-on while she plays; she turns to face you while you're talking to her.
-const rozSheets = sheetSprite({
-  w: 36, h: 60, cx: 14,
+// ─────────────────────────── the cast as sprite sheets
+// Drawn Sam & Max style by art-src/cast.py. The code-drawn versions above stand in
+// while the images load.
+
+// The hero: idle, a four-frame walk, and talking.
+export const teen = sheetSprite({
+  w: 30, h: 50, cx: 15, half: 6,
+  anims: { idle: { src: heroIdle, frames: 16, fps: 8 }, walk: { src: heroWalk, frames: 4, fps: 8 }, talk: { src: heroTalk, frames: 4, fps: 8 } },
+  pick: p => p.walk ? 'walk' : p.talk ? 'talk' : 'idle',
+  fallback: teenCode,
+});
+
+// Barnaby, on his bench, puffing his pipe.
+export const boater = sheetSprite({
+  w: 34, h: 46, cx: 16,
+  anims: { idle: { src: barnabyIdle, frames: 24, fps: 8 }, talk: { src: barnabyTalk, frames: 8, fps: 8 } },
+  pick: p => p.talk ? 'talk' : 'idle',
+  fallback: boaterCode,
+});
+
+// Roz: side-on while she plays; she turns to face you while you're talking to her.
+export const busker = sheetSprite({
+  w: 46, h: 58, cx: 18,
   anims: { play: { src: rozPlay, frames: 24, fps: 8 }, listen: { src: rozListen, frames: 16, fps: 8 }, talk: { src: rozTalk, frames: 8, fps: 8 } },
   pick: p => p.talk ? 'talk' : p.chat ? 'listen' : 'play',
   fallback: buskerCode,

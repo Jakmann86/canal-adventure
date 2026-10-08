@@ -12,6 +12,8 @@ export interface SheetSprite {
   cx: number;
   /** Screen pixels per image pixel: 2 matches the code-drawn cast, 1 is finer detail. */
   scale?: 1 | 2;
+  /** Half the actor's width in sprite units (the actor's `w`, halved); 7 by default. */
+  half?: number;
   anims: Record<string, Sheet>;
   /** Which animation to play for this pose. */
   pick: (p: Pose) => string;
@@ -53,8 +55,8 @@ export function sheetSprite(def: SheetSprite): SpriteFn {
     const name = def.pick(p), sheet = def.anims[name], img = imgs[name];
     if (!sheet || !img || !loaded(img)) return def.fallback(g, x, b, p);
     const t = (p.t ?? 0) / 1000 + (p.ph ?? 0), f = Math.floor(t * sheet.fps) % sheet.frames;
-    // The kit draws sprites at 2× scale, centred 7 units right of x.
+    // The kit draws sprites at 2× scale, with the actor's centre half its width right of x.
     const k = (def.scale ?? 2) / 2;
-    g.ctx.drawImage(img, f * def.w, 0, def.w, def.h, x + 7 - def.cx * k, b - def.h * k, def.w * k, def.h * k);
+    g.ctx.drawImage(img, f * def.w, 0, def.w, def.h, x + (def.half ?? 7) - def.cx * k, b - def.h * k, def.w * k, def.h * k);
   };
 }
