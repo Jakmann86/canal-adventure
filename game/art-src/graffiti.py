@@ -3,7 +3,7 @@
 Run `python3 art-src/graffiti.py` from game/ to rebuild src/art/img/wick-murals.png.
 
 One still image, at 2 image pixels per scene pixel, covering the walls from
-scene (0, 150) to (554, 226): the WICK piece, the face mural with its
+scene (0, 150) to (554, 226): the WICK piece, the Gob mural with its
 paste-up posters, and Jasper's tag. Jasper's tag is a puzzle clue, so it must
 always read clearly as x² + 3x = 28.
 """
@@ -201,46 +201,115 @@ for x, y in [(70, 24), (128, 22), (176, 26), (222, 30)]:              # glints o
     for k in range(5):
         px(x + k, y + k, 'n100')
 
-# ─────────────────────────── B. the face mural and paste-ups (scene x 206–366)
+# ─────────────────────────── B. the Gob mural and paste-ups (scene x 206–366)
+# An original character, painted straight onto the brick: a big pink grinning gob on
+# legs, in white high-tops, with a spray can. Inside its mouth: a little canal and boat.
 B0 = 412
-mural = np.zeros((H, W), bool); mural[36:, B0:B0 + 320] = True
 yy, xx = np.mgrid[0:H, 0:W]
-ang = np.arctan2(yy - 92, xx - 488)
-fill(mural & ((ang * 8 / math.pi) % 2 < 1), 'blu'); fill(mural & ((ang * 8 / math.pi) % 2 >= 1), 'blu3')
-for x in range(B0, B0 + 320, 3):                                     # darker paint pooled at the bottom
-    if rng.random() < 0.7:
-        rect(x, 152 - rng.randint(2, 16), 1, 16, 'blu8')
-# wild yellow hair, flaming up off the top of the wall
-hair = disc_mask(488, 66, 52, 40)
-for k in range(13):
-    a = math.pi * (1.05 + k / 12 * 0.9)
-    tx, ty = 488 + math.cos(a) * 66, 70 + math.sin(a) * 50
-    for j in range(24):
-        q = j / 24
-        cx, cy = 488 + (tx - 488) * q, 70 + (ty - 70) * q
-        hair |= disc_mask(cx, cy, 9 * (1 - q) + 1.5)
-hair &= yy >= 28
-fill(dilate(hair, 2) & (yy >= 28), 'ink'); fill(hair, 'yel')
-fill(hair & ~shift(hair, -3, 0), 'yel7'); fill(hair & ~shift(hair, 2, 2), 'yel3')
-# the face
-face = disc_mask(488, 96, 38, 46)
-fill(dilate(face, 2), 'ink'); fill(face, 'pink')
-fill(face & ~shift(face, -7, 0), 'pink7'); fill(face & ~shift(face, 3, 3), 'pink3')
-for ex in (472, 504):                                                # big eyes, glancing down at the canal
-    e = disc_mask(ex, 84, 10, 12)
-    fill(dilate(e, 2), 'ink'); fill(e, 'n100')
-    fill(disc_mask(ex - 3, 88, 5, 6), 'ink'); fill(disc_mask(ex - 5, 85, 1.6), 'n100')
-    for k in range(-9, 10):                                          # brows
-        px(ex + k, 66 - (9 - abs(k)) * 0.35, 'ink'); px(ex + k, 67 - (9 - abs(k)) * 0.35, 'ink')
-for cx in (460, 516):
-    fill(disc_mask(cx, 106, 7, 5), 'a400')
-for k in range(6):
-    px(487 + k * 0.3, 96 + k, 'pink7'); px(486, 102, 'pink7'); px(491, 103, 'pink7')
-mouth = disc_mask(488, 110, 22, 16) & (yy >= 110)
-fill(dilate(mouth, 2) & (yy >= 108), 'ink'); fill(mouth, 'a800')
-fill(mouth & (yy < 116), 'n100'); fill(mouth & disc_mask(492, 124, 9, 5), 'a400')
-for x in range(472, 506, 7):
-    rect(x, 110, 1, 6, 'n400')
+
+
+def rrect(x0, y0, x1, y1, r):
+    """Rounded rectangle mask."""
+    m = (xx >= x0) & (xx <= x1) & (yy >= y0) & (yy <= y1)
+    for cx, cy in ((x0 + r, y0 + r), (x1 - r, y0 + r), (x0 + r, y1 - r), (x1 - r, y1 - r)):
+        corner = ((xx < x0 + r) if cx == x0 + r else (xx > x1 - r)) & ((yy < y0 + r) if cy == y0 + r else (yy > y1 - r))
+        m &= ~corner | (((xx - cx) ** 2 + (yy - cy) ** 2) <= r * r)
+    return m
+
+
+def limb(points, r):
+    m = np.zeros((H, W), bool)
+    for (x0, y0), (x1, y1) in zip(points, points[1:]):
+        n = int(max(abs(x1 - x0), abs(y1 - y0))) + 1
+        for k in range(n + 1):
+            m |= disc_mask(x0 + (x1 - x0) * k / n, y0 + (y1 - y0) * k / n, r)
+    return m
+
+
+def inked(m, c, light=None, dark=None, w=2):
+    """Fill with a cartoon outline, a lit top-left edge and a shaded bottom-right."""
+    fill(dilate(m, w) & (yy >= 12), 'ink'); fill(m, c)
+    if dark:
+        fill(m & ~shift(m, -4, -3), dark)
+    if light:
+        fill(m & ~shift(m, 3, 3), light)
+
+
+# a teal splash behind it
+splash = np.zeros((H, W), bool)
+srng = random.Random(3)
+for _ in range(46):
+    a, d = srng.uniform(0, 2 * math.pi), srng.random() ** 0.6
+    splash |= disc_mask(486 + math.cos(a) * d * 62, 82 + math.sin(a) * d * 56, srng.uniform(8, 18))
+splash &= (yy >= 14)
+fill(splash, 'teal'); fill(splash & ~shift(splash, 3, 3), 'teal3'); fill(splash & ~shift(splash, -3, -3), 'teal7')
+for _ in range(220):
+    a, d = srng.uniform(0, 2 * math.pi), srng.uniform(58, 74)
+    px(486 + math.cos(a) * d, 82 + math.sin(a) * d * 0.9, 'teal')
+for x in (438, 452, 520, 536):
+    drip(x, 128 + srng.randint(-6, 6), srng.randint(6, 14), 'teal', 2)
+
+# legs and big white high-tops
+inked(limb([(470, 108), (468, 128)], 5), 'pink', 'pink3', 'pink7')
+inked(limb([(504, 108), (508, 128)], 5), 'pink', 'pink3', 'pink7')
+for x0, x1 in ((448, 484), (494, 532)):
+    shoe = rrect(x0, 124, x1, 146, 8) | rrect(x0 + 4, 120, x0 + 22, 134, 4)
+    inked(shoe, 'n100', None, 'n400')
+    rect(x0, 142, x1 - x0 + 1, 4, 'n400'); rect(x0, 145, x1 - x0 + 1, 1, 'ink')
+    for k in range(3):
+        rect(x0 + 7, 125 + k * 4, 12, 2, 'a500')                       # red laces
+    rect(x0 + 22, 132, x1 - x0 - 26, 3, 'pink')                         # a pink stripe
+
+# the gob itself
+body = rrect(438, 22, 536, 114, 24)
+inked(body, 'pink', 'pink3', 'pink7', 3)
+for x in (452, 476, 498, 522):                                         # paint dripping off the bottom
+    drip(x, 115, srng.randint(5, 12), 'pink', 3)
+mouth = rrect(448, 38, 526, 102, 14)
+fill(dilate(mouth, 2), 'ink'); fill(mouth, '#efe4c8')
+# a little canal inside the mouth
+rect(450, 76, 75, 24, 'teal'); 
+for x in range(452, 524, 6):
+    rect(x, 76 + (x // 6) % 2, 3, 1, 'n100')
+boat = rrect(470, 70, 502, 76, 2)
+fill(dilate(boat, 1), 'ink'); fill(boat, 'a500'); rect(476, 64, 18, 6, 'a500'); rect(476, 64, 18, 1, 'ink'); rect(480, 58, 2, 6, 'ink')
+for k in range(3):
+    px(482 + k, 54 - k * 2, 'n400')                                     # chimney smoke
+# teeth, top and bottom
+for i in range(5):
+    x = 451 + i * 15
+    for y0, y1 in ((40, 56), (86, 101)):
+        tooth = rrect(x, y0, x + 13, y1, 4)
+        fill(dilate(tooth, 1), 'ink'); fill(tooth, 'n100')
+        fill(tooth & ~shift(tooth, 0, -3), 'n400')
+# bulging eyes on top, glancing down at the real canal
+for ex, ey in ((466, 20), (506, 17)):
+    e = disc_mask(ex, ey, 10, 11)
+    inked(e, 'n100', None, 'n400')
+    fill(disc_mask(ex - 3, ey + 4, 4), 'ink'); fill(disc_mask(ex - 4, ey + 2, 1.5), 'n100')
+# a long tongue lolling out of the corner
+tongue = limb([(452, 96), (446, 108), (444, 120), (448, 128)], 5)
+inked(tongue, 'a400', 'pink3', 'pink7')
+drip(447, 132, 8, 'a400', 2)
+# arms: one waving, one holding a spray can and spraying
+inked(limb([(536, 70), (548, 58), (556, 42)], 4), 'pink', 'pink3', 'pink7')
+glove = disc_mask(558, 36, 7)
+inked(glove, 'n100', None, 'n400')
+for k in range(3):
+    rect(552 + k * 5, 27, 3, 6, 'n100'); rect(552 + k * 5, 26, 3, 1, 'ink')
+inked(limb([(440, 74), (428, 88), (424, 100)], 4), 'pink', 'pink3', 'pink7')
+can = rrect(414, 96, 428, 124, 3)
+inked(can, 'a500', 'a400', 'a700')
+rect(415, 104, 13, 5, 'yel'); rect(417, 91, 9, 5, 'n400'); rect(419, 88, 4, 3, 'ink')
+fill(disc_mask(428, 100, 5), 'pink'); fill(disc_mask(428, 100, 5) & ~shift(disc_mask(428, 100, 5), 2, 2), 'pink3')
+for _ in range(90):                                                     # the spray, misting up and left
+    d = srng.random()
+    a = srng.uniform(-0.5, 0.5) + math.pi * 1.25
+    px(418 + math.cos(a) * d * 26, 88 + math.sin(a) * d * 26, 'pink' if srng.random() < 0.7 else 'pink3')
+# a little stencil smiley signature
+sig = disc_mask(548, 140, 6)
+fill(dilate(sig, 1), 'ink'); fill(sig, 'n100'); px(546, 138, 'ink'); px(550, 138, 'ink'); rect(545, 142, 6, 1, 'ink')
+
 # paste-up posters, tape and torn corners
 posters = [
     ('yel', lambda x, y: (fill(disc_mask(x + 14, y + 14, 8), 'org'), [px(x + 14 + math.cos(a) * 12, y + 14 + math.sin(a) * 12, 'org') for a in np.linspace(0, 6.28, 16)])),
@@ -256,7 +325,7 @@ for k, (bgc, art) in enumerate(posters):
     for j in range(5):
         rect(x + 4, 98 + j * 7, 20 - (j * 5) % 9, 2, ['ink', 'n100'][j % 2] if k != 2 else 'ink')
     for j in range(6):                                              # torn bottom edge
-        rect(x + j * 5, 138, 3, 2 + (j * 7 + k) % 3, 'blu')
+        img[138:140 + (j * 7 + k) % 3, x + j * 5:x + j * 5 + 3] = 0
     sparkle(x + 22, 132, 'n100', 2)
 
 # ─────────────────────────── C. Jasper's tag (scene x 376–554)

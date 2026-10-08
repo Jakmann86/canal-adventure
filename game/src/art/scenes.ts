@@ -269,9 +269,13 @@ export const scenes: Record<string, (g: Kit, v: Vis) => void> = {
     for (let k = 0; k < 6; k++) R(120 + k * 6, 200, 3, 26, ['yel', 'pink', 'teal', 'org', 'grn', 'blu'][k]);
     const piece = (s: string, x: number, y: number, k: number, fill: string, sh: string) => { T(s, x + 4, y + 4, sh, k); ([[-2, 0], [2, 0], [0, -2], [0, 2]] as [number, number][]).forEach(([dx, dy]) => T(s, x + dx, y + dy, 'ink', k)); T(s, x, y, fill, k); };
     piece('WICK', 30, 158, 5, 'yel', 'teal7'); for (let i = 0; i < 16; i++) px(32 + i * 5, 160, 'bg');
-    R(206, 168, 160, 58, 'blu'); for (let x = 206; x < 366; x += 3) if (rnd() > .3) R(x, 226, 1, -(rnd() * 8), 'blu8');
+    // The high-detail mural is painted straight onto the brick, so the old blue panel only
+    // draws without it (the random calls still run, so the rest of the scene stays put).
+    const old = !loaded(murals);
+    if (old) R(206, 168, 160, 58, 'blu');
+    for (let x = 206; x < 366; x += 3) if (rnd() > .3) { const h = -(rnd() * 8); if (old) R(x, 226, 1, h, 'blu8'); }
     const face = () => { E(244, 196, 18, 22, 'pink'); R(234, 190, 6, 4, 'ink'); R(250, 190, 6, 4, 'ink'); R(236, 191, 2, 2, 'bg'); R(252, 191, 2, 2, 'bg'); R(238, 206, 14, 3, 'a700'); R(226, 172, 36, 6, 'yel'); R(230, 166, 28, 6, 'yel'); };
-    for (let k = 0; k < 4; k++) { R(282 + k * 20, 176, 14, 14, ['grn', 'yel', 'teal', 'pink'][k]); R(282 + k * 20, 196, 14, 24, ['org', 'pur', 'yel', 'grn'][k]); }
+    if (old) for (let k = 0; k < 4; k++) { R(282 + k * 20, 176, 14, 14, ['grn', 'yel', 'teal', 'pink'][k]); R(282 + k * 20, 196, 14, 24, ['org', 'pur', 'yel', 'grn'][k]); }
     // Jasper's tag: x² + 3x = 28 (roots −7 and 4 open his padlock)
     R(376, 156, 178, 46, 'pur8'); for (let x = 376; x < 554; x += 4) if (rnd() > .4) R(x, 202, 1, rnd() * 10, 'pur8');
     piece('X', 386, 168, 5, 'pink', 'blu'); piece('2', 406, 162, 3, 'pink', 'blu'); piece('+3X=28', 420, 168, 5, 'yel', 'org');
