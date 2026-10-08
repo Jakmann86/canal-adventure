@@ -19,10 +19,23 @@ export interface SheetSprite {
   fallback: SpriteFn;
 }
 
+let version = 0;
+/** Goes up each time an image finishes loading, so backgrounds that paint images can be redrawn. */
+export const artVersion = () => version;
+
 export function load(src: string) {
   const img = new Image();
+  img.onload = () => { version++; };
   img.src = src;
   return img;
+}
+
+/** A still image painted into a scene background at `res` image pixels per scene pixel.
+ *  Returns false (so the caller can draw its code-drawn version) until the image has loaded. */
+export function paint(ctx: CanvasRenderingContext2D, img: HTMLImageElement, x: number, y: number, res: number) {
+  if (!loaded(img)) return false;
+  ctx.drawImage(img, x, y, img.naturalWidth / res, img.naturalHeight / res);
+  return true;
 }
 
 export const loaded = (img: HTMLImageElement) => img.complete && img.naturalWidth > 0;

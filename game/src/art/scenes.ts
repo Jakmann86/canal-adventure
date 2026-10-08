@@ -2,11 +2,14 @@
 // longer baked in (they're drawn live by the engine), and the art reacts to game
 // state through `v` (boat present, items taken, and so on).
 import type { Kit } from './kit';
-import { drawSheet, load, loaded } from './images';
+import { drawSheet, load, loaded, paint } from './images';
 import willowPng from './img/willow.png';
+import muralsPng from './img/wick-murals.png';
 
 // The Little Venice willow: high-detail art (art-src/willow.py), 56 frames at 12 fps.
 const willow = load(willowPng);
+// The Hackney Wick murals: high-detail art (art-src/graffiti.py), painted over the code-drawn ones.
+const murals = load(muralsPng);
 
 export type Vis = Record<string, boolean>;
 
@@ -267,13 +270,16 @@ export const scenes: Record<string, (g: Kit, v: Vis) => void> = {
     const piece = (s: string, x: number, y: number, k: number, fill: string, sh: string) => { T(s, x + 4, y + 4, sh, k); ([[-2, 0], [2, 0], [0, -2], [0, 2]] as [number, number][]).forEach(([dx, dy]) => T(s, x + dx, y + dy, 'ink', k)); T(s, x, y, fill, k); };
     piece('WICK', 30, 158, 5, 'yel', 'teal7'); for (let i = 0; i < 16; i++) px(32 + i * 5, 160, 'bg');
     R(206, 168, 160, 58, 'blu'); for (let x = 206; x < 366; x += 3) if (rnd() > .3) R(x, 226, 1, -(rnd() * 8), 'blu8');
-    E(244, 196, 18, 22, 'pink'); R(234, 190, 6, 4, 'ink'); R(250, 190, 6, 4, 'ink'); R(236, 191, 2, 2, 'bg'); R(252, 191, 2, 2, 'bg'); R(238, 206, 14, 3, 'a700'); R(226, 172, 36, 6, 'yel'); R(230, 166, 28, 6, 'yel');
+    const face = () => { E(244, 196, 18, 22, 'pink'); R(234, 190, 6, 4, 'ink'); R(250, 190, 6, 4, 'ink'); R(236, 191, 2, 2, 'bg'); R(252, 191, 2, 2, 'bg'); R(238, 206, 14, 3, 'a700'); R(226, 172, 36, 6, 'yel'); R(230, 166, 28, 6, 'yel'); };
     for (let k = 0; k < 4; k++) { R(282 + k * 20, 176, 14, 14, ['grn', 'yel', 'teal', 'pink'][k]); R(282 + k * 20, 196, 14, 24, ['org', 'pur', 'yel', 'grn'][k]); }
     // Jasper's tag: x² + 3x = 28 (roots −7 and 4 open his padlock)
     R(376, 156, 178, 46, 'pur8'); for (let x = 376; x < 554; x += 4) if (rnd() > .4) R(x, 202, 1, rnd() * 10, 'pur8');
     piece('X', 386, 168, 5, 'pink', 'blu'); piece('2', 406, 162, 3, 'pink', 'blu'); piece('+3X=28', 420, 168, 5, 'yel', 'org');
     R(386, 191, 134, 2, 'teal');
     R(376, 204, 178, 22, 'grn'); for (let x = 380; x < 554; x += 14) { C(x, 214, 4, 'yel'); px(x, 214, 'org'); }
+    // The high-detail murals cover the code-drawn ones once loaded (drawn either way, so the
+    // random details later in the scene stay put).
+    if (!paint(g.ctx, murals, 0, 150, 2)) face();
     R(556, 152, 84, 18, 'ink'); T('BAR', 566, 155, 'yel', 2); T('OPEN', 596, 159, 'pink');
     R(560, 172, 80, 54, 'teal7'); R(564, 176, 72, 30, 'ink'); for (let i = 0; i < 6; i++) { const x = 568 + i * 11; R(x, 194, 4, 12, ['yel', 'pink', 'grn', 'org', 'teal', 'bg'][i]); }
     // a stack of schooners on the bar counter

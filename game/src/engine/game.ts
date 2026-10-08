@@ -2,6 +2,7 @@
 // line, nine verbs and the inventory), laid out at 2× like the design.
 import { kit, type DrawOpts, type Kit } from '../art/kit';
 import { scenes as ART } from '../art/scenes';
+import { artVersion } from '../art/images';
 import { icons } from '../art/icons';
 import { teen } from '../art/sprites';
 import { Panels } from './panels';
@@ -199,7 +200,7 @@ export class Game {
   private render() {
     const sc = this.scene, s = this.state;
     const vis = sc.vis?.(s) ?? {};
-    const key = sc.art + JSON.stringify(vis) + this.opts.dither;
+    const key = sc.art + JSON.stringify(vis) + this.opts.dither + artVersion();
     if (key !== this.bgKey) {
       this.bgKey = key;
       const b = this.bg.getContext('2d')!; b.imageSmoothingEnabled = false;

@@ -98,7 +98,7 @@ export const hackneywick: SceneDef = {
   hotspots: s => [
     { id: 'stadium', name: 'London Stadium', rect: [330, 72, 270, 72], walkTo: null, look: 'The Olympic Stadium. West Ham play there now. Every other Saturday it sounds like the sky is falling.' },
     { id: 'orbit', name: 'the Orbit', rect: [282, 22, 40, 120], walkTo: null, look: 'The ArcelorMittal Orbit: a big red tangle with a slide down the middle.' },
-    { id: 'wick', name: 'WICK piece', rect: [26, 158, 74, 32], walkTo: null, look: 'A huge yellow WICK. Proper graffiti.' },
+    { id: 'wick', name: 'WICK piece', rect: [16, 154, 122, 38], walkTo: null, look: 'A huge yellow WICK. Proper graffiti.' },
     { id: 'tag', name: 'Jasper’s tag', rect: [376, 156, 178, 46], walkTo: null, look: async sc => { await sc.me('A big pink tag: x² + 3x = 28.', 'Somebody really wanted that to look edgy.'); sc.note('tag'); } },
     { id: 'mural', name: 'mural', rect: [206, 166, 160, 60], walkTo: null, look: 'A pink face with yellow hair, beaming at the canal. It looks happier than anyone on the towpath.' },
     { id: 'bar', name: 'canalside bar', rect: [556, 152, 84, 50], walkTo: 600, look: 'Jasper’s bar. Everything comes in a schooner, and there’s a basket of very expensive bread.',
