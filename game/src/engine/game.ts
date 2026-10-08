@@ -19,6 +19,9 @@ export interface Content {
 }
 
 const W = 640, H = 288, SPEED = 72;
+/** Canvas pixels per scene pixel. Scene art is drawn in 640×288 coordinates; the extra
+ *  resolution is there for high-detail images such as the Little Venice willow. */
+const RES = 2;
 const DEFAULTS: Record<Verb, string> = {
   'Give': 'I’d rather hang on to it.',
   'Open': 'It doesn’t seem to open.',
@@ -93,9 +96,10 @@ export class Game {
     this.stage = el('div', 'stage', this.root);
     this.sceneEl = el('div', 'scene', this.stage);
     this.canvas = el('canvas', 'scene-canvas', this.sceneEl);
-    this.canvas.width = W; this.canvas.height = H;
+    this.canvas.width = W * RES; this.canvas.height = H * RES;
     this.ctx = this.canvas.getContext('2d')!; this.ctx.imageSmoothingEnabled = false;
-    this.bg.width = W; this.bg.height = H;
+    this.ctx.setTransform(RES, 0, 0, RES, 0, 0);
+    this.bg.width = W * RES; this.bg.height = H * RES;
     this.hotLayer = el('div', 'hot-layer', this.sceneEl);
     this.speechEl = el('div', 'speech', this.sceneEl);
     this.toastEl = el('div', 'toast', this.sceneEl);
@@ -199,6 +203,7 @@ export class Game {
     if (key !== this.bgKey) {
       this.bgKey = key;
       const b = this.bg.getContext('2d')!; b.imageSmoothingEnabled = false;
+      b.setTransform(RES, 0, 0, RES, 0, 0);
       b.clearRect(0, 0, W, H);
       this.bgKit = kit(b, this.opts);
       ART[sc.art](this.bgKit, vis);
@@ -206,7 +211,7 @@ export class Game {
     }
     const c = this.ctx;
     c.clearRect(0, 0, W, H);
-    c.drawImage(this.bg, 0, 0);
+    c.drawImage(this.bg, 0, 0, W, H);
     // The scene's living layers: water glints, bobbing boats, smoke, birds
     if (this.bgKit?.anims.length) { this.bgKit.setCtx(c); this.bgKit.anims.forEach(f => f(this.t / 1000)); }
     const g = kit(c, this.opts);

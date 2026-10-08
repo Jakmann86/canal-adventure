@@ -124,10 +124,12 @@ export function kit(ctx: CanvasRenderingContext2D, opt: DrawOpts): Kit {
     anim(t => {
       if (!spots) {
         spots = [];
-        const W = base.canvas.width, d = base.getImageData(0, 0, W, base.canvas.height).data;
+        // The canvas may be higher resolution than the 640×288 the scenes are drawn in.
+        const k = Math.round(base.getTransform().a) || 1, CW = base.canvas.width, W = CW / k;
+        const d = base.getImageData(0, 0, CW, base.canvas.height).data;
         const tc = document.createElement('canvas').getContext('2d')!; tc.fillStyle = col(key); tc.fillRect(0, 0, 1, 1);
         const [r0, g0, b0] = tc.getImageData(0, 0, 1, 1).data;
-        const ok = (x: number, y: number) => { if (x < 0 || x >= W) return false; const i = (y * W + x) * 4; return Math.abs(d[i] - r0) + Math.abs(d[i + 1] - g0) + Math.abs(d[i + 2] - b0) < 18; };
+        const ok = (x: number, y: number) => { if (x < 0 || x >= W) return false; const i = (y * k * CW + x * k) * 4; return Math.abs(d[i] - r0) + Math.abs(d[i + 1] - g0) + Math.abs(d[i + 2] - b0) < 18; };
         let sd = 97; const rr = () => { sd = (sd * 16807) % 2147483647; return (sd - 1) / 2147483646; };
         for (let i = 0; i < n * 10 && spots.length < n; i++) {
           const x = Math.floor(rr() * W), y = Math.floor(y0 + rr() * (y1 - y0)), w = 3 + Math.floor(rr() * 6);

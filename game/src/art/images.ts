@@ -19,17 +19,26 @@ export interface SheetSprite {
   fallback: SpriteFn;
 }
 
-function load(src: string) {
+export function load(src: string) {
   const img = new Image();
   img.src = src;
   return img;
+}
+
+export const loaded = (img: HTMLImageElement) => img.complete && img.naturalWidth > 0;
+
+/** An animated piece of scenery from a one-row sprite sheet, placed in scene coordinates.
+ *  `res` is image pixels per scene pixel: 2 gives twice the scenes' detail. */
+export function drawSheet(ctx: CanvasRenderingContext2D, img: HTMLImageElement, fw: number, fh: number, frames: number, fps: number, t: number, x: number, y: number, res: number) {
+  const f = Math.floor(t * fps) % frames;
+  ctx.drawImage(img, f * fw, 0, fw, fh, x, y, fw / res, fh / res);
 }
 
 export function sheetSprite(def: SheetSprite): SpriteFn {
   const imgs = Object.fromEntries(Object.entries(def.anims).map(([k, s]) => [k, load(s.src)]));
   return (g, x, b, p) => {
     const name = def.pick(p), sheet = def.anims[name], img = imgs[name];
-    if (!sheet || !img?.complete || !img.naturalWidth) return def.fallback(g, x, b, p);
+    if (!sheet || !img || !loaded(img)) return def.fallback(g, x, b, p);
     const t = (p.t ?? 0) / 1000 + (p.ph ?? 0), f = Math.floor(t * sheet.fps) % sheet.frames;
     // The kit draws sprites at 2× scale, centred 7 units right of x.
     const k = (def.scale ?? 2) / 2;

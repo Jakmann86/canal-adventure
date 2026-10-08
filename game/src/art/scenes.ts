@@ -2,6 +2,11 @@
 // longer baked in (they're drawn live by the engine), and the art reacts to game
 // state through `v` (boat present, items taken, and so on).
 import type { Kit } from './kit';
+import { drawSheet, load, loaded } from './images';
+import willowPng from './img/willow.png';
+
+// The Little Venice willow: high-detail art (art-src/willow.py), 56 frames at 12 fps.
+const willow = load(willowPng);
 
 export type Vis = Record<string, boolean>;
 
@@ -79,10 +84,12 @@ export const scenes: Record<string, (g: Kit, v: Vis) => void> = {
     for (let i = 0; i < 110; i++) R(rnd() * 640, 160 + rnd() * 90, 3 + rnd() * 9, 1, rnd() > .5 ? 'wat3' : 'wat8');
     E(304, 172, 74, 10, 'grn8'); E(304, 170, 70, 7, 'grn'); R(234, 176, 140, 3, 'stock7');
     for (let y = 182; y < 210; y += 2) if (rnd() > .3) R(260 + rnd() * 20, y, 70 + rnd() * 20, 1, 'grn8');
-    R(298, 104, 8, 68, 'wood9'); L(300, 120, 280, 98, 'wood9'); L(304, 116, 330, 96, 'wood9');
     g.shimmer(156, 250, 'wat', ['wat3', 'bg']);
-    // The willow sways, with the odd gust
+    // The willow sways, with the odd gust. Drawn at twice the scene's resolution;
+    // the simpler code-drawn tree stands in until the image has loaded.
     g.anim(t => {
+      if (loaded(willow)) return drawSheet(g.ctx, willow, 272, 252, 56, 12, t, 236, 50, 2);
+      R(298, 104, 8, 68, 'wood9'); L(300, 120, 280, 98, 'wood9'); L(304, 116, 330, 96, 'wood9');
       const gust = Math.pow(Math.max(0, Math.sin(t * 0.42)), 6), amp = 0.9 + 3.4 * gust, cx = Math.round(Math.sin(t * 1.3) * gust * 1.6);
       let sd = 7; const r = () => { sd = (sd * 16807) % 2147483647; return (sd - 1) / 2147483646; };
       E(304 + cx, 104, 58, 38, 'grn8'); E(298 + cx, 96, 48, 30, 'grn'); E(316 + cx, 92, 26, 18, 'lime');
