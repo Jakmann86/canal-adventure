@@ -6,9 +6,9 @@ import { drawSheet, load, loaded, paint } from './images';
 import willowPng from './img/willow.png';
 import muralsPng from './img/wick-murals.png';
 
-// The Little Venice willow: high-detail art (art-src/willow.py), 56 frames at 12 fps.
+// The Little Venice willow (art-src/willow.py): 56 frames at 12 fps, in chunky pixels like the cast.
 const willow = load(willowPng);
-// The Hackney Wick murals: high-detail art (art-src/graffiti.py), painted over the code-drawn ones.
+// The Hackney Wick murals (art-src/graffiti.py), in chunky pixels, painted over the code-drawn ones.
 const murals = load(muralsPng);
 
 export type Vis = Record<string, boolean>;
@@ -88,10 +88,10 @@ export const scenes: Record<string, (g: Kit, v: Vis) => void> = {
     E(304, 172, 74, 10, 'grn8'); E(304, 170, 70, 7, 'grn'); R(234, 176, 140, 3, 'stock7');
     for (let y = 182; y < 210; y += 2) if (rnd() > .3) R(260 + rnd() * 20, y, 70 + rnd() * 20, 1, 'grn8');
     g.shimmer(156, 250, 'wat', ['wat3', 'bg']);
-    // The willow sways, with the odd gust. Drawn at twice the scene's resolution;
-    // the simpler code-drawn tree stands in until the image has loaded.
+    // The willow sways, with the odd gust. The simpler code-drawn tree stands in
+    // until the image has loaded.
     g.anim(t => {
-      if (loaded(willow)) return drawSheet(g.ctx, willow, 272, 252, 56, 12, t, 236, 50, 2);
+      if (loaded(willow)) return drawSheet(g.ctx, willow, 68, 63, 56, 12, t, 236, 50, 0.5);
       R(298, 104, 8, 68, 'wood9'); L(300, 120, 280, 98, 'wood9'); L(304, 116, 330, 96, 'wood9');
       const gust = Math.pow(Math.max(0, Math.sin(t * 0.42)), 6), amp = 0.9 + 3.4 * gust, cx = Math.round(Math.sin(t * 1.3) * gust * 1.6);
       let sd = 7; const r = () => { sd = (sd * 16807) % 2147483647; return (sd - 1) / 2147483646; };
@@ -269,7 +269,7 @@ export const scenes: Record<string, (g: Kit, v: Vis) => void> = {
     for (let k = 0; k < 6; k++) R(120 + k * 6, 200, 3, 26, ['yel', 'pink', 'teal', 'org', 'grn', 'blu'][k]);
     const piece = (s: string, x: number, y: number, k: number, fill: string, sh: string) => { T(s, x + 4, y + 4, sh, k); ([[-2, 0], [2, 0], [0, -2], [0, 2]] as [number, number][]).forEach(([dx, dy]) => T(s, x + dx, y + dy, 'ink', k)); T(s, x, y, fill, k); };
     piece('WICK', 30, 158, 5, 'yel', 'teal7'); for (let i = 0; i < 16; i++) px(32 + i * 5, 160, 'bg');
-    // The high-detail mural is painted straight onto the brick, so the old blue panel only
+    // The painted mural is straight onto the brick, so the old blue panel only
     // draws without it (the random calls still run, so the rest of the scene stays put).
     const old = !loaded(murals);
     if (old) R(206, 168, 160, 58, 'blu');
@@ -281,9 +281,9 @@ export const scenes: Record<string, (g: Kit, v: Vis) => void> = {
     piece('X', 386, 168, 5, 'pink', 'blu'); piece('2', 406, 162, 3, 'pink', 'blu'); piece('+3X=28', 420, 168, 5, 'yel', 'org');
     R(386, 191, 134, 2, 'teal');
     R(376, 204, 178, 22, 'grn'); for (let x = 380; x < 554; x += 14) { C(x, 214, 4, 'yel'); px(x, 214, 'org'); }
-    // The high-detail murals cover the code-drawn ones once loaded (drawn either way, so the
+    // The painted murals cover the code-drawn ones once loaded (drawn either way, so the
     // random details later in the scene stay put).
-    if (!paint(g.ctx, murals, 0, 150, 2)) face();
+    if (!paint(g.ctx, murals, 0, 150, 0.5)) face();
     R(556, 152, 84, 18, 'ink'); T('BAR', 566, 155, 'yel', 2); T('OPEN', 596, 159, 'pink');
     R(560, 172, 80, 54, 'teal7'); R(564, 176, 72, 30, 'ink'); for (let i = 0; i < 6; i++) { const x = 568 + i * 11; R(x, 194, 4, 12, ['yel', 'pink', 'grn', 'org', 'teal', 'bg'][i]); }
     // a stack of schooners on the bar counter

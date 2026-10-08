@@ -2,8 +2,9 @@
 
 Run `python3 art-src/graffiti.py` from game/ to rebuild src/art/img/wick-murals.png.
 
-One still image, at 2 image pixels per scene pixel, covering the walls from
-scene (0, 150) to (554, 226): the WICK piece, the Gob mural with its
+One still image covering the walls from scene (0, 150) to (554, 226). It's
+painted in high detail (2 pixels per scene pixel), then shrunk to the game's
+chunky pixel size (one pixel per 2 scene pixels): the WICK piece, the Gob mural with its
 paste-up posters, and Jasper's tag. Jasper's tag is a puzzle clue, so it must
 always read clearly as x² + 3x = 28.
 """
@@ -371,6 +372,9 @@ for i, x in enumerate(range(C0 + 8, C0 + 356, 28)):
         fill(disc_mask(x + 1 + math.cos(a) * 6, y + math.sin(a) * 6, 3, 2.4), 'yel')
     fill(disc_mask(x + 1, y, 4), 'org'); fill(disc_mask(x, y - 1, 1.5), 'yel3')
 
+# The game uses the chunky version: one pixel per 2 scene pixels, like the cast.
+import sys; sys.path.insert(0, HERE)
+from chunky import reduce
 out = os.path.join(HERE, '..', 'src', 'art', 'img', 'wick-murals.png')
-Image.fromarray(img, 'RGBA').save(out, optimize=True)
-print('wick-murals', W, 'x', H, os.path.getsize(out) // 1024, 'KB')
+reduce(Image.fromarray(img, 'RGBA'), 4).save(out, optimize=True)
+print('wick-murals', os.path.getsize(out) // 1024, 'KB')

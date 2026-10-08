@@ -2,9 +2,10 @@
 
 Run `python3 art-src/willow.py` from game/ to rebuild src/art/img/willow.png.
 
-The tree is drawn at 2 image pixels per scene pixel: twice the scenes'
-resolution, and four times Roz's. One frame is 272x252 pixels and covers
-the scene from (236, 50) to (372, 176). The sheet is a 56-frame loop at
+The tree is drawn in high detail (2 pixels per scene pixel, 272x252 a frame),
+then shrunk to the game's chunky pixel size (one pixel per 2 scene pixels,
+68x63 a frame), which keeps the shapes and colours of the detailed drawing.
+A frame covers the scene from (236, 50) to (372, 176). The sheet is a 56-frame loop at
 12 fps: the fronds sway, and once a loop a gust of wind passes through the
 tree from left to right.
 """
@@ -196,6 +197,8 @@ if __name__ == '__main__':
     sheet = Image.new('RGBA', (FW * FRAMES, FH), (0, 0, 0, 0))
     for i in range(FRAMES):
         sheet.paste(frame(i), (i * FW, 0))
+    # The game uses the chunky version: one pixel per 2 scene pixels, like the cast.
+    from chunky import reduce_sheet
     out = os.path.join(HERE, '..', 'src', 'art', 'img', 'willow.png')
-    sheet.quantize(colors=32, method=Image.Quantize.FASTOCTREE).save(out, optimize=True)
+    reduce_sheet(sheet, FW, FRAMES, 4).save(out, optimize=True)
     print('willow', FRAMES, 'frames,', os.path.getsize(out) // 1024, 'KB')

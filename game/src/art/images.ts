@@ -41,7 +41,7 @@ export function paint(ctx: CanvasRenderingContext2D, img: HTMLImageElement, x: n
 export const loaded = (img: HTMLImageElement) => img.complete && img.naturalWidth > 0;
 
 /** An animated piece of scenery from a one-row sprite sheet, placed in scene coordinates.
- *  `res` is image pixels per scene pixel: 2 gives twice the scenes' detail. */
+ *  `res` is image pixels per scene pixel: 0.5 is the cast's chunky size, 2 twice the scenes' detail. */
 export function drawSheet(ctx: CanvasRenderingContext2D, img: HTMLImageElement, fw: number, fh: number, frames: number, fps: number, t: number, x: number, y: number, res: number) {
   const f = Math.floor(t * fps) % frames;
   ctx.drawImage(img, f * fw, 0, fw, fh, x, y, fw / res, fh / res);
