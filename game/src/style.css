@@ -1,6 +1,16 @@
 /* The game screen, laid out at 2× its 640×400 resolution as in the design, then
    scaled to fit the window. Colours come from the Modernist tokens plus the
    game's own UI colours (teal verbs, yellow highlights, slate inventory). */
+/* Pixelify Sans's 5 and 2 read as S and Z, so digits come from Jersey 10, a
+   pixel font with plain numerals, scaled to Pixelify's height. Letters stay in Pixelify. */
+@font-face {
+  font-family: 'Canal Digits';
+  src: url('../node_modules/@fontsource/jersey-10/files/jersey-10-latin-400-normal.woff2') format('woff2');
+  size-adjust: 118%;
+  unicode-range: U+0030-0039;
+  font-display: swap;
+}
+
 :root {
   --ink: #201e1d;
   --bg: #f3f2f2;
@@ -16,7 +26,7 @@
   --yel: oklch(0.87 0.16 95);
   --slate: oklch(0.3 0.03 260);
   --slate-hi: oklch(0.38 0.05 260);
-  --pixel: 'Pixelify Sans', ui-monospace, monospace;
+  --pixel: 'Canal Digits', 'Pixelify Sans', ui-monospace, monospace;
   --outline: 2px 0 var(--ink), -2px 0 var(--ink), 0 2px var(--ink), 0 -2px var(--ink), 2px 2px var(--ink), -2px -2px var(--ink), 2px -2px var(--ink), -2px 2px var(--ink);
 }
 
@@ -131,6 +141,8 @@ button { font: inherit; }
 .panel-facts { background: var(--slate); padding: 8px 14px; display: flex; flex-direction: column; gap: 4px; }
 .panel-facts-head { color: var(--teal); font-size: 20px; text-transform: uppercase; letter-spacing: .06em; }
 .panel-fact { font-size: 22px; color: var(--n100); }
+.ask-diagram { width: 600px; height: 210px; align-self: center; border: 2px solid var(--slate-hi); }
+.panel.ask { gap: 10px; }
 .panel-row { display: flex; align-items: center; gap: 12px; }
 .panel-input {
   font-family: var(--pixel); font-size: 32px; width: 220px; padding: 4px 12px; background: var(--n100); color: var(--ink);
