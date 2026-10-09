@@ -27,14 +27,16 @@ Everything you learn goes into the **graph-paper notebook**. When a puzzle asks 
 | Little Venice | Barnaby, on the bench | none (tutorial) | |
 | Camden Lock | Roz the busker; Gerald, from his window | Rates: charge time = 1800 Wh ÷ 400 W, inside Roz’s 5-hour loan | Battery label, power pack label |
 | Camden Lock | | Rates: 10 cm per 15 ticks, so stopping at the cill 1.2 m down takes 180 s | Roz’s metronome, lock board |
-| Islington Tunnel | Old Tam the legger | Circles: arch height at the cabin’s edge is √(2² − 1²) ≈ 1.73 m < 1.76 m | Tam |
-| Hackney Wick | Jasper the hipster (and Mummy, on the phone) | Quadratics: x² + 3x = 28 gives roots −7 and 4, so the padlock is `−74` | Jasper’s bragging |
+| Islington Tunnel | Old Tam the legger | Circles: the arch is 4 m across, so its radius is 2 m; above a cabin corner 1 m out it’s √(2² − 1²) ≈ 1.73 m < 1.76 m. A sketch of the arch and cabin comes with the question, and Tam has replies for common slips (span as radius, top of arch) | The tunnel plaque (span), Tam’s chalk sketch (cabin size), Tam (“it’s the corners that catch”) |
+| Hackney Wick | Jasper the hipster (and Mummy, on the phone) | Quadratics: x² + 3x = 28 gives roots −7 and 4, so the padlock is `−74` | Jasper’s bragging (“solve the piece, you’re in; small to big”) |
 | Hackney Wick | | Volume ÷ rate: 450 L at 50 L/min is 9 min, before Jasper is back in 10 | Tank plate, bucket and metronome, Mummy |
 | Stonebridge | Keith | Ratio: 4 : 3 : 2 : 1 of a 2 L tin, with the mushrooms halved because they’re double strength: 800 / 300 / 400 / 200 ml | Roz’s song, Keith’s tin, his Singapore story, Jasper’s schooner |
 | Cheshunt | The fierce swan | none (ingredient source) | |
 | Limehouse | The gatekeeper, on the radio | Sinusoidal modelling: lows at 23:54 and 12:18 give high water at 06:06 (dark, refused) and 18:30 | His rambling, plotted on Dot’s chart plotter |
 
 Item chains: crusts → toasted on the stove → seeds → paper bag with chalk label → *Heritage Grain Sourdough* (for the swan); the NOT TO SCALE sticker goes on the boat for Tam; paint tin + schooner + stout, mushrooms, algae water and eggshell → Gunnel Green (for Keith).
+
+**Getting rid of Jasper** takes conversation. His first call is the credit-card gag. Once you’ve got him talking (the tag plus two other topics), Mummy rings again and says exactly where she is, while he isn’t listening. Tell him, and he runs for the station.
 
 Wrong answers never end the game. Guessing in the paint tin wastes scarce ingredients, so you have to go back for more (Jasper’s crate, the mushrooms, the lock, the nest), which makes working it out the better move.
 

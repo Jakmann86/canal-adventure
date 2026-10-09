@@ -39,7 +39,7 @@ async function keith(s: Script) {
     s.is('gotTin') && !s.is('painted') && ['About the paint…', () => s.say('keith', 'Four ingredients, measured proper. Kayleigh uses a glass.', 'Don’t guess. It’s all rare stuff, and I ain’t got all year.')],
     ['What’s a gongoozler?', () => s.say('keith', 'Someone who stands on a bridge watching boats and never does nothing.', 'Like you, till recently.')],
     ['Tell me about Singapore.', async () => {
-      await s.say('keith', 'Stationed there in ’62. Hot? You could fry an egg on the gunwale.', 'We’d go out past Sembawang at night, and the sea glowed. Glowed! Same as them mushrooms up Cheshunt way.', 'Double strength, them mushrooms. Our Kayleigh only ever puts in half.', 'Anyway, the food. Don’t get me started on the food…');
+      await s.say('keith', 'Stationed there in ’62. Hot? You could fry an egg on the gunwale.', 'We’d go out past Sembawang at night, and the sea glowed. Glowed! Same as them mushrooms up Cheshunt way.', 'Strong stuff, them mushrooms. Punch twice their weight. Our Kayleigh never measures ’em out like the rest.', 'Anyway, the food. Don’t get me started on the food…');
       s.note('double');
     }],
     ['Is that your natural hair colour?', () => s.say('keith', 'Course it is. Distinguished, this is.')],

@@ -4,30 +4,55 @@ import type { SceneDef } from '../../engine/types';
 import { boat, exit, talk, when } from '../common';
 import { PAINT, TAG, TANK, near } from '../puzzles';
 
+// The first call is the credit-card gag. The second comes once the player has got
+// Jasper talking: his mum says exactly where she is, and he isn't listening.
 async function phoneCall(s: Script) {
   s.set('onCall');
   await s.say('jasper', 'Mummy, I’ve told you. The Velvet Cellar is a COCKTAIL bar.');
   await s.say('mummy', 'It sounds very dark, darling. And what is “Just Fans”?');
   await s.say('jasper', 'It’s a VENTILATION subscription, Mummy. For the hydroponics.');
-  await s.say('mummy', 'Well, I’ll see for myself. I’m popping round this afternoon.');
-  await s.say('jasper', 'This afternoon? Mummy, no, the boat isn’t… Mummy? Mummy?');
+  await s.say('mummy', 'Well. Don’t think I won’t come and see for myself one of these days.');
+  await s.say('jasper', 'You won’t. Bye, Mummy.');
   s.set('onCall', false); s.set('overheard');
   await s.say('jasper', 'Sorry. Family. What do you want?');
+}
+
+async function secondCall(s: Script) {
+  s.set('onCall');
+  await s.say('jasper', 'Oh, for… Hi, Mummy.');
+  await s.say('mummy', 'Darling, I’m on the Overground, I’ve just left Stratford. I thought I’d surprise you!');
+  await s.say('jasper', 'Mm-hm. Lovely, Mummy.');
+  await s.say('mummy', 'So I’ll hop off at Hackney Wick, it’s only the next stop. I want to see this famous boat.');
+  await s.say('jasper', 'Mm. Yes. Love you. Bye.');
+  s.set('onCall', false); s.set('secondCall');
+  await s.say('jasper', 'She never stops talking. I genuinely stopped listening in 2019. Where were we?');
+}
+
+/** Once Jasper has bragged about his tag and chatted about two other things, his mum rings back. */
+async function maybeCall(s: Script) {
+  const chatty = s.is('askedTag') && ['askedTap', 'askedBoat', 'askedDrink'].filter(f => s.is(f)).length >= 2;
+  if (chatty && !s.is('secondCall')) await secondCall(s);
 }
 
 async function jasper(s: Script) {
   if (!s.is('overheard')) await phoneCall(s);
   await talk(s, () => [
     ['Nice tag.', async () => {
-      await s.say('jasper', 'It’s not a tag. It’s a statement.', 'Every piece I do hides my padlock code. The roots, lowest first, minus signs and all. It’s a whole thing.');
-      s.note('tag', 'tagcode');
+      await s.say('jasper', 'It’s not a tag. It’s a statement.', 'Every piece I do is also my lock code. Solve the piece, you’re in. If you’re clever enough, which you’re not.', 'Small to big, obviously. And negative numbers are very underground right now.');
+      s.note('tag', 'tagcode'); s.set('askedTag'); await maybeCall(s);
     }],
-    !s.is('hoseOff') && ['Can I use the tap?', () => s.say('jasper', 'The tap is feeding my heritage tomatoes. Obviously.', 'It’s the only tap for miles, so: no.')],
-    ['Can I get a drink?', async () => { await s.say('jasper', 'Grab a schooner off the bar. Four hundred mil, line every hundred. For flights.'); s.note('schooner'); }],
-    ['What’s on your boat?', () => s.say('jasper', 'Stout. My stout. Brewed in a bathtub, aged in irony.', 'And it’s padlocked, so don’t get ideas.')],
-    s.is('overheard') && ['Isn’t your mum popping round this afternoon?', async () => {
-      await s.say('jasper', '…She said that, didn’t she. She SAID that.', 'If she sees the boat, it’s over. If she sees the card statement, it’s REALLY over.', 'I’ll head her off at the station. She never stays more than ten minutes.');
-      await s.say('jasper', 'Don’t touch my tomatoes. And if you’re after the stout, help yourself. You’ll never crack the code, genius.');
+    !s.is('hoseOff') && ['Can I use the tap?', async () => { await s.say('jasper', 'The tap is feeding my heritage tomatoes. Obviously.', 'It’s the only tap for miles, so: no.'); s.set('askedTap'); await maybeCall(s); }],
+    ['Can I get a drink?', async () => { await s.say('jasper', 'Grab a schooner off the bar. Four hundred mil, line every hundred. For flights.', 'Not that you’d appreciate a flight.'); s.note('schooner'); s.set('askedDrink'); await maybeCall(s); }],
+    ['What’s on your boat?', async () => { await s.say('jasper', 'Stout. My stout. Brewed in a bathtub, aged in irony.', 'And it’s padlocked, so don’t get ideas.'); s.set('askedBoat'); await maybeCall(s); }],
+    s.is('secondCall') && !s.is('jasperGone') && ['Were you listening to your mum just then?', async () => {
+      await s.say('jasper', 'Never. It’s always the cellar, the fans, the card statement. Why?');
+      const opts = ['She said she’s getting off at Hackney Wick. Now.', 'She said she’s at the garden centre.', 'No reason.'];
+      const i = await s.choose(opts);
+      await s.me(opts[i]);
+      if (i === 1) return s.say('jasper', 'Good. She can stay there. Forever, ideally.');
+      if (i === 2) return s.say('jasper', 'Then why ask? God.');
+      await s.say('jasper', '…Hackney Wick? She said Hackney WICK?', 'If she sees the boat, it’s over. If she sees the card statement, it’s REALLY over.', 'I’ll head her off at the station. She never lasts more than ten minutes round here, the noise gives her a migraine.');
+      await s.say('jasper', 'Don’t touch my tomatoes. And if it’s the stout you’re after, the code’s on the wall. You’ll never get it, genius.');
       s.note('mummy'); s.set('jasperGone');
       await s.blackout('Jasper sprints off towards Hackney Wick station.');
       return true;

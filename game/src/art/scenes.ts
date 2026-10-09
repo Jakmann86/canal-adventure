@@ -172,6 +172,8 @@ export const scenes: Record<string, (g: Kit, v: Vis) => void> = {
     R(cx - r - 10, sy, 10, 86, 'n400'); R(cx + r, sy, 10, 86, 'n400'); for (let y = sy; y < 262; y += 10) { R(cx - r - 10, y, 10, 1, 'n600'); R(cx + r, y, 10, 1, 'n600'); }
     R(cx - 44, 70, 88, 26, 'ink'); R(cx - 42, 72, 84, 22, 'n800'); T('ISLINGTON', cx - 35, 76, 'n200', 1); T('TUNNEL', cx - 23, 84, 'n200', 1);
     T('R=?', 210, 120, 'n100', 2); L(208, 132, 236, 132, 'n100');
+    for (let a = Math.PI; a <= 2 * Math.PI; a += 0.05) px(246 + 8 * Math.cos(a), 116 + 8 * Math.sin(a), 'n100');
+    L(238, 116, 254, 116, 'n100'); R(243, 109, 1, 7, 'n100'); R(249, 109, 1, 7, 'n100'); R(243, 109, 7, 1, 'n100');
     const ivy = (x0: number, x1: number, n: number) => { for (let i = 0; i < n; i++) { const x = x0 + rnd() * (x1 - x0), len = 10 + rnd() * 70; for (let y = 40; y < 40 + len; y += 1) { const xx = x + Math.sin(y * 0.2 + i) * 2; if (rnd() > .35) px(xx, y, rnd() > .5 ? 'n900' : 'ink'); if (rnd() > .8) R(xx - 1, y, 3, 2, 'n900'); } } };
     ivy(0, 52, 26); ivy(204, 254, 22); ivy(60, 196, 8);
     for (let x = 70; x < 150; x++) { const s = (150 - x) * 0.22; for (let y = Math.round(224 - s); y <= 224 + s * 0.5; y++) if ((x + y) % 2 === 0 && y > 106) px(x, y, 'a300'); }

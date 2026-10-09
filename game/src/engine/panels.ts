@@ -9,6 +9,8 @@ export interface AskOpts {
   time?: boolean;
   /** Notebook facts to show under the question, if the player has found them. */
   facts?: string[];
+  /** Draws a diagram above the answer box (canvas is 600×210). */
+  diagram?: (c: CanvasRenderingContext2D) => void;
 }
 
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, parent?: HTMLElement, text?: string) => {
@@ -63,6 +65,10 @@ export class Panels {
     return new Promise(res => {
       const box = this.frame('ask', 'Work it out');
       el('div', 'panel-q', box, q);
+      if (opts.diagram) {
+        const cv = el('canvas', 'ask-diagram', box); cv.width = 600; cv.height = 210;
+        opts.diagram(cv.getContext('2d')!);
+      }
       this.factList(box, opts.facts ?? []);
       const row = el('div', 'panel-row', box);
       const input = el('input', 'panel-input', row); input.inputMode = opts.time ? 'text' : 'decimal'; input.autocomplete = 'off'; if (opts.time) input.placeholder = 'hh:mm';
@@ -129,7 +135,7 @@ export class Panels {
         c.fillStyle = 'oklch(0.52 0.09 200)';
         for (let h = 0; h <= 24; h += 3) c.fillRect(X(h * 60), 8, 1, 96);
         for (let m = 0; m <= 7; m++) c.fillRect(20, Y(m), 290, 1);
-        c.fillStyle = 'oklch(0.74 0.12 190)'; c.font = '8px "Pixelify Sans", monospace';
+        c.fillStyle = 'oklch(0.74 0.12 190)'; c.font = '8px "Canal Digits", "Pixelify Sans", monospace';
         for (let h = 0; h <= 24; h += 6) c.fillText(String(h).padStart(2, '0'), X(h * 60) - 5, 116);
         for (let m = 0; m <= 6; m += 2) c.fillText(String(m), 6, Y(m) + 3);
         c.fillStyle = 'oklch(0.87 0.16 95)'; c.fillText('SUNRISE', X(TIDE.sunrise) + 2, 16); c.fillText('SUNSET', X(TIDE.sunset) - 30, 16);
@@ -237,7 +243,7 @@ export class Panels {
     if (!total) return 'Sealing an empty tin. Keith will love that.';
     const missing = PAINT.ingredients.filter(i => !tin[i.id]);
     if (missing.length) return `Not right: the song has four lines, and there’s no ${missing[0].name} in it.`;
-    if (tin.mushrooms === 600) return 'It glows like a fruit machine. Those mushrooms must be strong stuff.';
+    if (tin.mushrooms === 600) return 'It glows like a fruit machine. Way too much glow.';
     if (tin.mushrooms > t.mushrooms) return 'Far too glowy.';
     if (tin.mushrooms < t.mushrooms) return 'Not glowy enough.';
     if (tin.stout > t.stout) return 'Too dark: more stout than the song asks for.';
